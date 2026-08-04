@@ -578,12 +578,37 @@ async function dryRun(id) {
   }
 }
 
+let pendingDeleteId = null;
+
 async function deleteConnection(id, name) {
-  if (confirm(`Are you sure you want to delete connection "${name}"?\n\nThis will only remove the connection configuration from Backpack. Your GitHub backup commits will not be affected.`)) {
-    await window.api.deleteConnection(id);
-    await loadConnections();
+  pendingDeleteId = id;
+  const modal = document.getElementById('deleteConfirmModal');
+  const msgEl = document.getElementById('deleteConfirmMsg');
+  if (msgEl) {
+    msgEl.innerHTML = `Are you sure you want to remove <strong>${name}</strong>?<br><span style="font-size:0.78rem; opacity:0.8; margin-top:0.3rem; display:block;">Your existing backup commits on GitHub will remain intact.</span>`;
   }
+  if (modal) modal.classList.add('active');
 }
+
+// Wire up Delete Modal buttons
+document.getElementById('btnCancelDeleteModal')?.addEventListener('click', () => {
+  document.getElementById('deleteConfirmModal')?.classList.remove('active');
+  pendingDeleteId = null;
+});
+
+document.getElementById('btnConfirmDeleteModal')?.addEventListener('click', async () => {
+  if (pendingDeleteId) {
+    try {
+      await window.api.deleteConnection(pendingDeleteId);
+      showNotification('Connection Removed', 'Database connection deleted', 'info');
+      await loadConnections();
+    } catch (err) {
+      showNotification('Delete Failed', err.message, 'error');
+    }
+  }
+  document.getElementById('deleteConfirmModal')?.classList.remove('active');
+  pendingDeleteId = null;
+});
 
 async function runBackup(id) {
   const card = document.querySelector(`[data-card-id="${id}"]`);

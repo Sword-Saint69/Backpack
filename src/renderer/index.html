@@ -363,6 +363,24 @@
     </div>
   </div>
 
+  <!-- Custom Delete Confirmation Modal (Watermelon UI Family Receive / Confirmation port) -->
+  <div class="modal-overlay" id="deleteConfirmModal">
+    <div class="modal-content card watermelon-modal" style="max-width: 440px !important; text-align: center; padding: 2rem;">
+      <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+        <i class="ph-bold ph-trash" style="font-size: 1.6rem; color: #ef4444;"></i>
+      </div>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #fafafa; margin-bottom: 0.5rem;">Delete Connection?</h3>
+      <p id="deleteConfirmMsg" style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1.5rem;">
+        Are you sure you want to remove this connection from Backpack?
+      </p>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center;">
+        <button type="button" class="btn secondary" id="btnCancelDeleteModal" style="flex: 1; padding: 0.75rem;">Cancel</button>
+        <button type="button" class="btn danger" id="btnConfirmDeleteModal" style="flex: 1; padding: 0.75rem; background: #ef4444; color: #fff; font-weight: 600;">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Bottom Dock (Lightswind Dock equivalent) -->
   <div class="dock-wrapper" id="dockWrapper">
     <div class="dock-panel" id="dockPanel">
