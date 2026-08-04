@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backpack — Database Backup to GitHub</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon">🎒</div>
+        <div class="brand-text">
+          <h1>Backpack</h1>
+          <span class="version">v1.1 Automation</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-btn active" data-tab="connections">
+          <span class="icon">🔌</span> Connections
+        </button>
+        <button class="nav-btn" data-tab="logs">
+          <span class="icon">📜</span> Audit Logs
+        </button>
+        <button class="nav-btn" data-tab="settings">
+          <span class="icon">⚙️</span> Settings
+        </button>
+      </nav>
+
+      <div class="status-box" id="githubStatusSummary">
+        <span class="status-indicator warning"></span>
+        <span class="status-text">GitHub target unconfigured</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content">
+      <!-- Connections Tab -->
+      <section id="tab-connections" class="tab-page active">
+        <header class="page-header">
+          <div>
+            <h2>Database Connections</h2>
+            <p>Manage, schedule, and trigger point-in-time backups to your GitHub repository.</p>
+          </div>
+          <button class="btn primary" id="btnOpenAddModal">+ Add Connection</button>
+        </header>
+
+        <div class="cards-grid" id="connectionsGrid">
+          <!-- Connection cards dynamically injected here -->
+        </div>
+      </section>
+
+      <!-- Logs Tab -->
+      <section id="tab-logs" class="tab-page">
+        <header class="page-header">
+          <div>
+            <h2>Audit Logs</h2>
+            <p>History of all manual and scheduled backup operations.</p>
+          </div>
+          <button class="btn secondary" id="btnRefreshLogs">Refresh</button>
+        </header>
+
+        <div class="table-container">
+          <table class="logs-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Connection</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Rows / Tables</th>
+                <th>Size</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody id="logsTableBody">
+              <!-- Logs populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Settings Tab -->
+      <section id="tab-settings" class="tab-page">
+        <header class="page-header">
+          <div>
+            <h2>App Settings & Target</h2>
+            <p>Configure target repository, personal access token (PAT), and startup launch preferences.</p>
+          </div>
+        </header>
+
+        <div class="card form-card" style="margin-bottom: 2rem;">
+          <h3 style="margin-bottom: 1rem;">System Launch</h3>
+          <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between;">
+            <div>
+              <label style="font-size: 0.95rem; color: var(--text-main);">Launch Backpack on System Startup</label>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Starts Backpack minimized in tray when logging into your operating system.</p>
+            </div>
+            <input type="checkbox" id="chkStartup" style="width: 20px; height: 20px; cursor: pointer;">
+          </div>
+        </div>
+
+        <div class="card form-card">
+          <h3 style="margin-bottom: 1rem;">GitHub Repository Target</h3>
+          <form id="githubForm">
+            <div class="form-group">
+              <label for="ghRepo">Repository (owner/repo)</label>
+              <input type="text" id="ghRepo" placeholder="e.g. myusername/my-backups" required>
+            </div>
+
+            <div class="form-group">
+              <label for="ghBranch">Target Branch</label>
+              <input type="text" id="ghBranch" value="main" placeholder="main" required>
+            </div>
+
+            <div class="form-group">
+              <label for="ghToken">Personal Access Token (PAT)</label>
+              <input type="password" id="ghToken" placeholder="ghp_... or github_pat_...">
+              <small>Requires fine-grained PAT with <code>Contents: Read and write</code> permission.</small>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn secondary" id="btnTestGitHub">Test Connection</button>
+              <button type="submit" class="btn primary">Save Target Settings</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Connection Modal -->
+  <div class="modal-overlay" id="connectionModal">
+    <div class="modal-content card">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Connection</h3>
+        <button class="close-btn" id="btnCloseModal">&times;</button>
+      </div>
+
+      <form id="connectionForm">
+        <input type="hidden" id="connId">
+        <div class="form-group">
+          <label for="connName">Connection Name</label>
+          <input type="text" id="connName" placeholder="e.g. Production Postgres" required>
+        </div>
+
+        <div class="form-group">
+          <label for="connType">Database Type</label>
+          <select id="connType" required>
+            <option value="postgres">PostgreSQL / NeonDB</option>
+            <option value="mysql">MySQL</option>
+            <option value="firebase">Firebase Firestore</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="connSecret" id="connSecretLabel">Connection String / Service Account JSON</label>
+          <textarea id="connSecret" rows="3" placeholder="postgresql://user:pass@ep-xyz.neon.tech/neondb?sslmode=require"></textarea>
+        </div>
+
+        <h4 style="margin: 1rem 0 0.5rem 0; font-size: 0.9rem; color: var(--text-main);">Automatic Backup Schedule</h4>
+        
+        <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="schedEnabled" style="width: 16px; height: 16px;">
+          <label for="schedEnabled" style="margin: 0; color: var(--text-main);">Enable Cron Schedule</label>
+        </div>
+
+        <div class="form-group">
+          <label for="schedPreset">Preset</label>
+          <select id="schedPreset">
+            <option value="hourly">Hourly (at minute 0)</option>
+            <option value="daily">Daily (at midnight)</option>
+            <option value="weekly">Weekly (Sunday midnight)</option>
+            <option value="custom">Custom Cron Expression</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="groupCustomCron" style="display: none;">
+          <label for="schedCustom">Custom Cron Expression</label>
+          <input type="text" id="schedCustom" placeholder="0 */6 * * * (Every 6 hours)">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn secondary" id="btnTestConn">Test Connection</button>
+          <button type="submit" class="btn primary">Save Connection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
