@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const components = ['create-community', 'dialog-stack', 'uniswap-dialog'];
+const components = ['create-community', 'dialog-stack', 'uniswap-dialog', 'save-toggle-base'];
 const outDir = path.join(__dirname, 'src', 'renderer', 'watermelon-ui');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
