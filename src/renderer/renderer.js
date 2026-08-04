@@ -147,73 +147,77 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Refresh Logs Button
-  document.getElementById('btnRefreshLogs')?.addEventListener('click', () => loadLogs());
+// ── Dynamic DB Credential Guidance & Security Modes ──────────────────
+const DB_TYPE_CONFIG = {
+  postgres: {
+    label: 'Postgres Connection URI',
+    placeholder: 'postgresql://username:password@ep-cool-name.us-east-2.aws.neon.tech/neondb?sslmode=verify-full',
+    hint: '💡 <strong>Format:</strong> <code>postgresql://[user]:[password]@[host]:[port]/[dbname]?sslmode=verify-full</code>'
+  },
+  mysql: {
+    label: 'MySQL Connection URI or Config JSON',
+    placeholder: 'mysql://root:password@127.0.0.1:3306/mydatabase',
+    hint: '💡 <strong>Format:</strong> <code>mysql://[user]:[password]@[host]:[port]/[dbname]</code>'
+  },
+  firebase: {
+    label: 'Firebase Service Account Key (JSON)',
+    placeholder: '{\n  "type": "service_account",\n  "project_id": "my-project",\n  "private_key": "-----BEGIN PRIVATE KEY-----\\n..."\n}',
+    hint: '💡 Paste your entire GCP / Firebase service account <code>.json</code> credentials object.'
+  },
+  sqlite: {
+    label: 'SQLite Database Absolute File Path',
+    placeholder: 'C:\\Users\\name\\AppData\\Local\\MyApp\\database.sqlite',
+    hint: '💡 Enter the complete absolute filepath to your local <code>.sqlite</code> / <code>.db</code> file.'
+  },
+  mongodb: {
+    label: 'MongoDB Atlas Connection String',
+    placeholder: 'mongodb+srv://admin:password@cluster0.abcde.mongodb.net/production?retryWrites=true&w=majority',
+    hint: '💡 <strong>Format:</strong> <code>mongodb+srv://[user]:[pass]@[cluster]/[dbname]</code>'
+  },
+  supabase: {
+    label: 'Supabase Project URL & Service Role Key',
+    placeholder: 'https://xyz.supabase.co|service_role_secret_key',
+    hint: '💡 <strong>Format:</strong> <code>https://[project-id].supabase.co|[service_role_key]</code> (pipe-separated)'
+  }
+};
 
-  const modal = document.getElementById('connectionModal');
-  const btnOpenAdd = document.getElementById('btnOpenAddModal');
-  const btnCloseModal = document.getElementById('btnCloseModal');
-  const connForm = document.getElementById('connectionForm');
-
-  btnOpenAdd.addEventListener('click', () => {
-    document.getElementById('modalTitle').textContent = 'Add Connection';
-    connForm.reset();
-    document.getElementById('connId').value = '';
-    const secretEl = document.getElementById('connSecret');
-    secretEl.setAttribute('required', 'true');
-    setSecurityMode('normal');
-    updateCredentialHints();
-    modal.classList.add('active');
-  });
-
+function updateCredentialHints() {
   const connTypeSelect = document.getElementById('connType');
   const connSecretLabel = document.getElementById('connSecretLabel');
   const connSecretTextarea = document.getElementById('connSecret');
   const connSecretHint = document.getElementById('connSecretHint');
 
-  const DB_TYPE_CONFIG = {
-    postgres: {
-      label: 'Postgres Connection URI',
-      placeholder: 'postgresql://username:password@ep-cool-name.us-east-2.aws.neon.tech/neondb?sslmode=verify-full',
-      hint: '💡 <strong>Format:</strong> <code>postgresql://[user]:[password]@[host]:[port]/[dbname]?sslmode=verify-full</code>'
-    },
-    mysql: {
-      label: 'MySQL Connection URI or Config JSON',
-      placeholder: 'mysql://root:password@127.0.0.1:3306/mydatabase',
-      hint: '💡 <strong>Format:</strong> <code>mysql://[user]:[password]@[host]:[port]/[dbname]</code>'
-    },
-    firebase: {
-      label: 'Firebase Service Account Key (JSON)',
-      placeholder: '{\n  "type": "service_account",\n  "project_id": "my-project",\n  "private_key": "-----BEGIN PRIVATE KEY-----\\n..."\n}',
-      hint: '💡 Paste your entire GCP / Firebase service account <code>.json</code> credentials object.'
-    },
-    sqlite: {
-      label: 'SQLite Database Absolute File Path',
-      placeholder: 'C:\\Users\\name\\AppData\\Local\\MyApp\\database.sqlite',
-      hint: '💡 Enter the complete absolute filepath to your local <code>.sqlite</code> / <code>.db</code> file.'
-    },
-    mongodb: {
-      label: 'MongoDB Atlas Connection String',
-      placeholder: 'mongodb+srv://admin:password@cluster0.abcde.mongodb.net/production?retryWrites=true&w=majority',
-      hint: '💡 <strong>Format:</strong> <code>mongodb+srv://[user]:[pass]@[cluster]/[dbname]</code>'
-    },
-    supabase: {
-      label: 'Supabase Project URL & Service Role Key',
-      placeholder: 'https://xyz.supabase.co|service_role_secret_key',
-      hint: '💡 <strong>Format:</strong> <code>https://[project-id].supabase.co|[service_role_key]</code> (pipe-separated)'
-    }
-  };
+  const type = connTypeSelect?.value || 'postgres';
+  const cfg = DB_TYPE_CONFIG[type] || DB_TYPE_CONFIG.postgres;
+  if (connSecretLabel) connSecretLabel.textContent = cfg.label;
+  if (connSecretTextarea) connSecretTextarea.placeholder = cfg.placeholder;
+  if (connSecretHint) connSecretHint.innerHTML = cfg.hint;
+}
 
-  function updateCredentialHints() {
-    const type = connTypeSelect?.value || 'postgres';
-    const cfg = DB_TYPE_CONFIG[type] || DB_TYPE_CONFIG.postgres;
-    if (connSecretLabel) connSecretLabel.textContent = cfg.label;
-    if (connSecretTextarea) connSecretTextarea.placeholder = cfg.placeholder;
-    if (connSecretHint) connSecretHint.innerHTML = cfg.hint;
+function setSecurityMode(mode) {
+  const btnTabNormal = document.getElementById('btnTabNormal');
+  const btnTabGzip = document.getElementById('btnTabGzip');
+  const btnTabEncrypt = document.getElementById('btnTabEncrypt');
+  const chkCompress = document.getElementById('chkCompress');
+  const groupEncPassword = document.getElementById('groupEncPassword');
+
+  [btnTabNormal, btnTabGzip, btnTabEncrypt].forEach(b => b?.classList.remove('active'));
+  if (mode === 'normal') {
+    btnTabNormal?.classList.add('active');
+    if (chkCompress) chkCompress.checked = false;
+    if (groupEncPassword) groupEncPassword.style.display = 'none';
+  } else if (mode === 'gzip') {
+    btnTabGzip?.classList.add('active');
+    if (chkCompress) chkCompress.checked = true;
+    if (groupEncPassword) groupEncPassword.style.display = 'none';
+  } else if (mode === 'encrypt') {
+    btnTabEncrypt?.classList.add('active');
+    if (chkCompress) chkCompress.checked = true;
+    if (groupEncPassword) groupEncPassword.style.display = 'block';
   }
+}
 
-  connTypeSelect?.addEventListener('change', updateCredentialHints);
-  updateCredentialHints();
+document.addEventListener('DOMContentLoaded', async () => {
 
   btnCloseModal.addEventListener('click', () => {
     modal.classList.remove('active');
@@ -223,25 +227,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnTabNormal = document.getElementById('btnTabNormal');
   const btnTabGzip = document.getElementById('btnTabGzip');
   const btnTabEncrypt = document.getElementById('btnTabEncrypt');
-  const chkCompress = document.getElementById('chkCompress');
-  const groupEncPassword = document.getElementById('groupEncPassword');
+  const connTypeSelect = document.getElementById('connType');
 
-  function setSecurityMode(mode) {
-    [btnTabNormal, btnTabGzip, btnTabEncrypt].forEach(b => b?.classList.remove('active'));
-    if (mode === 'normal') {
-      btnTabNormal?.classList.add('active');
-      if (chkCompress) chkCompress.checked = false;
-      if (groupEncPassword) groupEncPassword.style.display = 'none';
-    } else if (mode === 'gzip') {
-      btnTabGzip?.classList.add('active');
-      if (chkCompress) chkCompress.checked = true;
-      if (groupEncPassword) groupEncPassword.style.display = 'none';
-    } else if (mode === 'encrypt') {
-      btnTabEncrypt?.classList.add('active');
-      if (chkCompress) chkCompress.checked = true;
-      if (groupEncPassword) groupEncPassword.style.display = 'flex';
-    }
-  }
+  connTypeSelect?.addEventListener('change', updateCredentialHints);
 
   btnTabNormal?.addEventListener('click', () => setSecurityMode('normal'));
   btnTabGzip?.addEventListener('click', () => setSecurityMode('gzip'));
