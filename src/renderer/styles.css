@@ -574,17 +574,18 @@ body {
 
 .floating-label {
   position: absolute;
-  left: 1rem;
+  left: 0.85rem;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   pointer-events: none;
   transition: top 0.18s ease, font-size 0.18s ease, color 0.18s ease, transform 0.18s ease;
   background: var(--bg-input);
-  padding: 0 4px;
+  padding: 0 6px;
   border-radius: 4px;
   line-height: 1;
+  z-index: 5;
 }
 
 .floating-input:focus + .floating-label,
@@ -603,7 +604,7 @@ body {
 .floating-textarea {
   resize: vertical;
   min-height: 88px;
-  padding-top: 1.35rem;
+  padding-top: 1rem;
   font-family: var(--font-mono);
   font-size: 0.82rem;
 }
@@ -992,11 +993,11 @@ body {
   color: var(--text-muted);
 }
 
-/* Watermelon Modal Specific Inputs */
-.watermelon-modal input[type="text"],
-.watermelon-modal input[type="password"],
-.watermelon-modal select,
-.watermelon-modal textarea {
+/* Legacy Watermelon Modal Non-Floating Inputs Only */
+.watermelon-modal input[type="text"]:not(.floating-input),
+.watermelon-modal input[type="password"]:not(.floating-input),
+.watermelon-modal select:not(.floating-input),
+.watermelon-modal textarea:not(.floating-input) {
   background: #18181b !important;
   border: 1px solid #27272a !important;
   border-radius: 16px !important;
@@ -1009,15 +1010,9 @@ body {
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.watermelon-modal textarea {
-  font-family: var(--font-mono) !important;
-  font-size: 0.82rem !important;
-  resize: vertical;
-}
-
-.watermelon-modal input:focus,
-.watermelon-modal select:focus,
-.watermelon-modal textarea:focus {
+.watermelon-modal input:not(.floating-input):focus,
+.watermelon-modal select:not(.floating-input):focus,
+.watermelon-modal textarea:not(.floating-input):focus {
   border-color: #52525b !important;
   background: #202023 !important;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05), inset 0 1px 2px rgba(0, 0, 0, 0.4) !important;
