@@ -31,7 +31,10 @@ class BackupRunner {
 
       onProgress({ status: 'uploading', message: `Uploading ${totalRows} rows to GitHub...` });
       const uploader = new GitHubUploader(githubConfig.token, githubConfig.ownerRepo, githubConfig.branch);
-      const result = await uploader.uploadBackup(conn.name, exportedData);
+      const result = await uploader.uploadBackup(conn.name, exportedData, {
+        compress: conn.compress,
+        encryptionPassword: conn.encryptionPassword
+      });
 
       // Write manifest.json at GitHub repository root
       await this.updateManifest(uploader, conn.name, result);

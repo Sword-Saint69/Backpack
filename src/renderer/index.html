@@ -167,6 +167,16 @@
           <input type="text" id="selectedTables" placeholder="users, orders, products (Comma-separated, leave blank for ALL)">
         </div>
 
+        <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="chkCompress" style="width: 16px; height: 16px;">
+          <label for="chkCompress" style="margin: 0; color: var(--text-main);">Compress Payload with Gzip (.json.gz)</label>
+        </div>
+
+        <div class="form-group">
+          <label for="encryptionPassword">Client-Side AES Encryption Password (Optional)</label>
+          <input type="password" id="encryptionPassword" placeholder="Password to encrypt JSON payload at rest on GitHub">
+        </div>
+
         <h4 style="margin: 1rem 0 0.5rem 0; font-size: 0.9rem; color: var(--text-main);">Automatic Backup Schedule</h4>
         
         <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">

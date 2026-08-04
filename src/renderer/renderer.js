@@ -73,6 +73,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tablesRaw = document.getElementById('selectedTables').value.trim();
     const selectedTables = tablesRaw ? tablesRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
 
+    const compress = document.getElementById('chkCompress').checked;
+    const encryptionPassword = document.getElementById('encryptionPassword').value.trim();
+
     const schedule = {
       enabled: document.getElementById('schedEnabled').checked,
       preset: document.getElementById('schedPreset').value,
@@ -80,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     try {
-      await window.api.saveConnection({ id, name, type, secret, selectedTables, schedule });
+      await window.api.saveConnection({ id, name, type, secret, selectedTables, compress, encryptionPassword, schedule });
       modal.classList.remove('active');
       await loadConnections();
     } catch (err) {
