@@ -163,54 +163,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     modal.classList.add('active');
   });
 
-// ── DB Type Credential Guidance (global helper) ──────────────────
-const DB_TYPE_CONFIG = {
-  postgres: {
-    label: 'Postgres Connection URI',
-    placeholder: 'postgresql://username:password@ep-cool-name.us-east-2.aws.neon.tech/neondb?sslmode=require',
-    hint: '💡 <strong>Format:</strong> <code>postgresql://[user]:[password]@[host]:[port]/[dbname]?sslmode=require</code>'
-  },
-  mysql: {
-    label: 'MySQL Connection URI or Config JSON',
-    placeholder: 'mysql://root:password@127.0.0.1:3306/mydatabase',
-    hint: '💡 <strong>Format:</strong> <code>mysql://[user]:[password]@[host]:[port]/[dbname]</code>'
-  },
-  firebase: {
-    label: 'Firebase Service Account Key (JSON)',
-    placeholder: '{\n  "type": "service_account",\n  "project_id": "my-project",\n  "private_key": "-----BEGIN PRIVATE KEY-----\\n..."\n}',
-    hint: '💡 Paste your entire GCP / Firebase service account <code>.json</code> credentials object.'
-  },
-  sqlite: {
-    label: 'SQLite Database Absolute File Path',
-    placeholder: 'C:\\Users\\name\\AppData\\Local\\MyApp\\database.sqlite',
-    hint: '💡 Enter the complete absolute filepath to your local <code>.sqlite</code> / <code>.db</code> file.'
-  },
-  mongodb: {
-    label: 'MongoDB Atlas Connection String',
-    placeholder: 'mongodb+srv://admin:password@cluster0.abcde.mongodb.net/production?retryWrites=true&w=majority',
-    hint: '💡 <strong>Format:</strong> <code>mongodb+srv://[user]:[pass]@[cluster]/[dbname]</code>'
-  },
-  supabase: {
-    label: 'Supabase Project URL & Service Role Key',
-    placeholder: 'https://xyz.supabase.co|service_role_secret_key',
-    hint: '💡 <strong>Format:</strong> <code>https://[project-id].supabase.co|[service_role_key]</code> (pipe-separated)'
-  }
-};
-
-function updateCredentialHints() {
   const connTypeSelect = document.getElementById('connType');
   const connSecretLabel = document.getElementById('connSecretLabel');
   const connSecretTextarea = document.getElementById('connSecret');
   const connSecretHint = document.getElementById('connSecretHint');
 
-  const type = connTypeSelect?.value || 'postgres';
-  const cfg = DB_TYPE_CONFIG[type] || DB_TYPE_CONFIG.postgres;
-  if (connSecretLabel) connSecretLabel.textContent = cfg.label;
-  if (connSecretTextarea) connSecretTextarea.placeholder = cfg.placeholder;
-  if (connSecretHint) connSecretHint.innerHTML = cfg.hint;
-}
+  const DB_TYPE_CONFIG = {
+    postgres: {
+      label: 'Postgres Connection URI',
+      placeholder: 'postgresql://username:password@ep-cool-name.us-east-2.aws.neon.tech/neondb?sslmode=require',
+      hint: '💡 <strong>Format:</strong> <code>postgresql://[user]:[password]@[host]:[port]/[dbname]?sslmode=require</code>'
+    },
+    mysql: {
+      label: 'MySQL Connection URI or Config JSON',
+      placeholder: 'mysql://root:password@127.0.0.1:3306/mydatabase',
+      hint: '💡 <strong>Format:</strong> <code>mysql://[user]:[password]@[host]:[port]/[dbname]</code>'
+    },
+    firebase: {
+      label: 'Firebase Service Account Key (JSON)',
+      placeholder: '{\n  "type": "service_account",\n  "project_id": "my-project",\n  "private_key": "-----BEGIN PRIVATE KEY-----\\n..."\n}',
+      hint: '💡 Paste your entire GCP / Firebase service account <code>.json</code> credentials object.'
+    },
+    sqlite: {
+      label: 'SQLite Database Absolute File Path',
+      placeholder: 'C:\\Users\\name\\AppData\\Local\\MyApp\\database.sqlite',
+      hint: '💡 Enter the complete absolute filepath to your local <code>.sqlite</code> / <code>.db</code> file.'
+    },
+    mongodb: {
+      label: 'MongoDB Atlas Connection String',
+      placeholder: 'mongodb+srv://admin:password@cluster0.abcde.mongodb.net/production?retryWrites=true&w=majority',
+      hint: '💡 <strong>Format:</strong> <code>mongodb+srv://[user]:[pass]@[cluster]/[dbname]</code>'
+    },
+    supabase: {
+      label: 'Supabase Project URL & Service Role Key',
+      placeholder: 'https://xyz.supabase.co|service_role_secret_key',
+      hint: '💡 <strong>Format:</strong> <code>https://[project-id].supabase.co|[service_role_key]</code> (pipe-separated)'
+    }
+  };
 
-document.addEventListener('DOMContentLoaded', async () => {
+  function updateCredentialHints() {
+    const type = connTypeSelect?.value || 'postgres';
+    const cfg = DB_TYPE_CONFIG[type] || DB_TYPE_CONFIG.postgres;
+    if (connSecretLabel) connSecretLabel.textContent = cfg.label;
+    if (connSecretTextarea) connSecretTextarea.placeholder = cfg.placeholder;
+    if (connSecretHint) connSecretHint.innerHTML = cfg.hint;
+  }
+
+  connTypeSelect?.addEventListener('change', updateCredentialHints);
+  updateCredentialHints();
 
   btnCloseModal.addEventListener('click', () => {
     modal.classList.remove('active');
@@ -392,34 +392,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadGitHubConfig() {
   try {
-    const config = (await window.api.getGitHubConfig()) || {};
+    const config = await window.api.getGitHubConfig();
     const statusBox = document.getElementById('githubStatusSummary');
     const warningBanner = document.getElementById('githubWarningBanner');
 
     if (config.ownerRepo && config.hasToken) {
-      const ghRepoInput = document.getElementById('ghRepo');
-      const ghBranchInput = document.getElementById('ghBranch');
-      if (ghRepoInput) ghRepoInput.value = config.ownerRepo;
-      if (ghBranchInput) ghBranchInput.value = config.branch || 'main';
-      if (statusBox) {
-        statusBox.innerHTML = `
-          <span class="status-indicator success"></span>
-          <span class="status-text">Target: ${config.ownerRepo}</span>
-        `;
-      }
+      document.getElementById('ghRepo').value = config.ownerRepo;
+      document.getElementById('ghBranch').value = config.branch || 'main';
+      statusBox.innerHTML = `
+        <span class="status-indicator success"></span>
+        <span class="status-text">Target: ${config.ownerRepo}</span>
+      `;
       if (warningBanner) warningBanner.style.display = 'none';
     } else {
-      if (statusBox) {
-        statusBox.innerHTML = `
-          <span class="status-indicator warning"></span>
-          <span class="status-text">GitHub unconfigured</span>
-          <button id="btnSidebarConfigure" onclick="document.querySelector('[data-tab=settings]')?.click()" style="margin-left: auto; font-size: 0.75rem; background: transparent; border: none; color: var(--primary); cursor: pointer; text-decoration: underline;">Configure</button>
-        `;
-      }
+      statusBox.innerHTML = `
+        <span class="status-indicator warning"></span>
+        <span class="status-text">GitHub unconfigured</span>
+        <button id="btnSidebarConfigure" onclick="document.querySelector('[data-tab=settings]').click()" style="margin-left: auto; font-size: 0.75rem; background: transparent; border: none; color: var(--primary); cursor: pointer; text-decoration: underline;">Configure</button>
+      `;
       if (warningBanner) warningBanner.style.display = 'block';
     }
   } catch (e) {
-    console.error('loadGitHubConfig error:', e);
+    console.error(e);
   }
 }
 
@@ -439,19 +433,11 @@ async function refreshGithubGating() {
 
 async function loadConnections() {
   const grid = document.getElementById('connectionsGrid');
-  if (!grid) return;
   grid.innerHTML = '';
-  
-  let connections = [];
-  let logs = [];
-  try {
-    connections = (await window.api.getConnections()) || [];
-    logs = (await window.api.getLogs()) || [];
-  } catch (err) {
-    console.error('Error fetching connections/logs:', err);
-  }
+  const connections = await window.api.getConnections();
+  const logs = await window.api.getLogs();
 
-  if (!Array.isArray(connections) || connections.length === 0) {
+  if (connections.length === 0) {
     grid.innerHTML = `
       <div class="card" style="border: 1.5px dashed rgba(255,255,255,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; text-align: center; grid-column: 1 / -1; background: rgba(255,255,255,0.02);">
         <div style="width:56px;height:56px;border-radius:16px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
@@ -592,37 +578,12 @@ async function dryRun(id) {
   }
 }
 
-let pendingDeleteId = null;
-
 async function deleteConnection(id, name) {
-  pendingDeleteId = id;
-  const modal = document.getElementById('deleteConfirmModal');
-  const msgEl = document.getElementById('deleteConfirmMsg');
-  if (msgEl) {
-    msgEl.innerHTML = `Are you sure you want to remove <strong>${name}</strong>?<br><span style="font-size:0.78rem; opacity:0.8; margin-top:0.3rem; display:block;">Your existing backup commits on GitHub will remain intact.</span>`;
+  if (confirm(`Are you sure you want to delete connection "${name}"?\n\nThis will only remove the connection configuration from Backpack. Your GitHub backup commits will not be affected.`)) {
+    await window.api.deleteConnection(id);
+    await loadConnections();
   }
-  if (modal) modal.classList.add('active');
 }
-
-// Wire up Delete Modal buttons
-document.getElementById('btnCancelDeleteModal')?.addEventListener('click', () => {
-  document.getElementById('deleteConfirmModal')?.classList.remove('active');
-  pendingDeleteId = null;
-});
-
-document.getElementById('btnConfirmDeleteModal')?.addEventListener('click', async () => {
-  if (pendingDeleteId) {
-    try {
-      await window.api.deleteConnection(pendingDeleteId);
-      showNotification('Connection Removed', 'Database connection deleted', 'info');
-      await loadConnections();
-    } catch (err) {
-      showNotification('Delete Failed', err.message, 'error');
-    }
-  }
-  document.getElementById('deleteConfirmModal')?.classList.remove('active');
-  pendingDeleteId = null;
-});
 
 async function runBackup(id) {
   const card = document.querySelector(`[data-card-id="${id}"]`);
@@ -672,40 +633,13 @@ async function editConnection(id) {
 
   document.getElementById('modalTitle').textContent = 'Edit Connection';
   document.getElementById('connId').value = conn.id;
-  document.getElementById('connName').value = conn.name || '';
-  document.getElementById('connType').value = conn.type || 'postgres';
-  document.getElementById('selectedTables').value = conn.selectedTables ? conn.selectedTables.join(', ') : '';
-
-  // Update hints
+  document.getElementById('connName').value = conn.name;
+  document.getElementById('connType').value = conn.type;
   updateCredentialHints();
-
   const secretEl = document.getElementById('connSecret');
   secretEl.value = '';
   secretEl.removeAttribute('required');
   secretEl.placeholder = '(Encrypted Secret Preserved — enter new value to overwrite)';
-
-  // Populate schedule & encryption settings
-  if (conn.schedule && conn.schedule.enabled) {
-    const schedEnabled = document.getElementById('schedEnabled');
-    if (schedEnabled) {
-      schedEnabled.checked = true;
-      schedEnabled.dispatchEvent(new Event('change'));
-    }
-    if (conn.schedule.preset) {
-      document.getElementById('schedPreset').value = conn.schedule.preset;
-      document.getElementById('schedPreset').dispatchEvent(new Event('change'));
-    }
-    if (conn.schedule.cron) {
-      document.getElementById('schedCustom').value = conn.schedule.cron;
-    }
-  } else {
-    const schedEnabled = document.getElementById('schedEnabled');
-    if (schedEnabled) {
-      schedEnabled.checked = false;
-      schedEnabled.dispatchEvent(new Event('change'));
-    }
-  }
-
   document.getElementById('connectionModal').classList.add('active');
 }
 
@@ -725,18 +659,21 @@ async function loadRestoreConnections() {
 
 document.getElementById('btnFetchSnapshots').addEventListener('click', async () => {
   const connName = document.getElementById('restoreSelectConn').value;
-  if (!connName) return alert('Select a connection first');
+  if (!connName) {
+    showNotification('Select Connection', 'Please select a database connection first', 'warning');
+    return;
+  }
 
   // Guard: require GitHub to be configured before fetching
   try {
     const config = await window.api.getGitHubConfig();
     if (!config.ownerRepo || !config.hasToken) {
-      alert('⚠️ GitHub repository and access token must be configured in Settings before fetching snapshots.');
-      document.querySelector('.nav-btn[data-tab="settings"]')?.click();
+      showNotification('GitHub Unconfigured', 'Configure repository and PAT in Settings first', 'warning');
+      switchToTab('settings');
       return;
     }
   } catch (e) {
-    alert('Unable to check GitHub configuration. Please verify Settings.');
+    showNotification('Check Failed', 'Unable to check GitHub configuration in Settings', 'error');
     return;
   }
 
