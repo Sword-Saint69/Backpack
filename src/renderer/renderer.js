@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       } catch (err) {
         btn.classList.remove('loading');
         btn.innerHTML = `<span class="btn-text">${idleText}</span>`;
-        alert(`Operation Failed: ${err.message}`);
+        showNotification('Operation Failed', err.message, 'error');
       }
     }, 600);
   }
@@ -379,7 +379,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnTestConn = document.getElementById('btnTestConn');
     const type = document.getElementById('connType').value;
     const secret = document.getElementById('connSecret').value.trim();
-    if (!secret) return alert('Please provide a connection secret first.');
+    if (!secret) {
+      showNotification('Missing Credentials', 'Please enter connection credentials first', 'warning');
+      return;
+    }
 
     animateSaveToggle(btnTestConn, 'Test Connection', 'Connected!', async () => {
       await window.api.testConnection({ type, secret });
@@ -631,9 +634,12 @@ async function dryRun(id) {
 }
 
 async function deleteConnection(id, name) {
-  if (confirm(`Are you sure you want to delete connection "${name}"?\n\nThis will only remove the connection configuration from Backpack. Your GitHub backup commits will not be affected.`)) {
+  try {
     await window.api.deleteConnection(id);
+    showNotification('Connection Removed', `Removed connection "${name}"`, 'info');
     await loadConnections();
+  } catch (err) {
+    showNotification('Delete Failed', err.message, 'error');
   }
 }
 
