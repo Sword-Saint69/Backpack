@@ -52,10 +52,10 @@ class RestoreEngine {
 
     let buffer = Buffer.from(res.data.content, 'base64');
 
-    // 1. Decrypt if encrypted (.enc or password provided)
+    // 1. Decrypt if encrypted (.enc extension or decryption password provided)
     if (path.endsWith('.enc') || encryptionPassword) {
       if (!encryptionPassword) {
-        throw new Error('This snapshot is AES encrypted. Please enter the decryption password.');
+        throw new Error('This snapshot is AES encrypted. Please enter the decryption password in the modal.');
       }
       try {
         buffer = cryptoUtils.decryptPayload(buffer, encryptionPassword);
@@ -64,12 +64,13 @@ class RestoreEngine {
       }
     }
 
-    // 2. Decompress if compressed (.gz or .json.gz)
-    if (path.endsWith('.gz') || path.endsWith('.gz.enc')) {
+    // 2. Auto-detect Gzip compression via magic header 0x1f8b or .gz extension
+    const isGzip = path.endsWith('.gz') || path.endsWith('.gz.enc') || (buffer.length > 2 && buffer[0] === 0x1f && buffer[1] === 0x8b);
+    if (isGzip) {
       try {
         buffer = zlib.gunzipSync(buffer);
       } catch (err) {
-        throw new Error(`Gzip Decompression failed: Snapshot payload is corrupted or requires decryption password.`);
+        throw new Error(`Gzip Decompression failed: Snapshot payload is corrupted or requires AES decryption password.`);
       }
     }
 
@@ -77,7 +78,7 @@ class RestoreEngine {
       const jsonStr = buffer.toString('utf-8');
       return JSON.parse(jsonStr);
     } catch (err) {
-      throw new Error(`Invalid JSON Payload: Failed to parse snapshot file (${err.message}). Verify if AES password or compression settings match.`);
+      throw new Error(`Invalid Snapshot Payload: Unable to parse snapshot JSON (${err.message}). If this backup was compressed or encrypted when created, select Gzip / enter AES password.`);
     }
   }
 
