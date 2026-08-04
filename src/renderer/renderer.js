@@ -322,11 +322,15 @@ async function loadConnections() {
 
   if (connections.length === 0) {
     grid.innerHTML = `
-      <div class="card" style="border: 2px dashed rgba(255,255,255,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; text-align: center; grid-column: 1 / -1;">
-        <span style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔌</span>
-        <h3>No Database Connections Yet</h3>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0 1.25rem 0; max-width: 400px;">Add your database credentials to schedule automatic point-in-time backups to GitHub.</p>
-        <button class="btn primary" onclick="document.getElementById('btnOpenAddModal').click()">+ Add First Connection</button>
+      <div class="card" style="border: 1.5px dashed rgba(255,255,255,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; text-align: center; grid-column: 1 / -1; background: rgba(255,255,255,0.02);">
+        <div style="width:56px;height:56px;border-radius:16px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+          <i class="ph-bold ph-plugs-connected" style="font-size:1.6rem;color:#60a5fa;"></i>
+        </div>
+        <h3 style="font-size:1.05rem;margin-bottom:0.4rem;">No connections yet</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0 0 1.25rem 0; max-width: 340px; line-height:1.5;">Add your database credentials to schedule automatic point-in-time backups pushed to GitHub.</p>
+        <button class="btn primary" onclick="document.getElementById('btnOpenAddModal').click()">
+          <i class="ph-bold ph-plus" style="margin-right:0.3rem;"></i> Add First Connection
+        </button>
       </div>
     `;
     return;
@@ -344,24 +348,56 @@ async function loadConnections() {
 
     const schedText = conn.schedule && conn.schedule.enabled ? `Enabled (${conn.schedule.preset})` : 'Disabled';
 
+    const DB_ICONS = { postgres: 'ph-database', mysql: 'ph-database', mongodb: 'ph-database', firebase: 'ph-fire', sqlite: 'ph-file-sql', supabase: 'ph-intersect' };
+    const dbIcon = DB_ICONS[conn.type] || 'ph-database';
+    const schedBadge = conn.schedule?.enabled
+      ? `<span style="background:rgba(16,185,129,0.15);color:#10b981;padding:2px 8px;border-radius:999px;font-size:0.7rem;font-weight:600;letter-spacing:.03em;">⏱ ${conn.schedule.preset || 'scheduled'}</span>`
+      : `<span style="background:rgba(255,255,255,0.06);color:var(--text-muted);padding:2px 8px;border-radius:999px;font-size:0.7rem;">Manual</span>`;
+
     card.innerHTML = `
-      <div>
-        <div class="conn-header">
-          <h3>${conn.name}</h3>
-          <span class="badge ${conn.type}">${conn.type}</span>
+      <div class="conn-card-top">
+        <div class="conn-db-icon">
+          <i class="ph-bold ${dbIcon}"></i>
         </div>
-        <div class="conn-meta" style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.25rem;">
-          <div><strong style="color: #a1a1aa;">Status:</strong> <span class="conn-status" style="color: var(--success);">Ready</span></div>
-          <div><strong style="color: #a1a1aa;">Last Run:</strong> <span>${lastRunText}</span></div>
-          <div><strong style="color: #a1a1aa;">Schedule:</strong> <span>${schedText}</span></div>
+        <div style="flex:1;min-width:0;">
+          <div class="conn-header">
+            <h3 style="font-size:1rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${conn.name}</h3>
+            <span class="badge ${conn.type}">${conn.type}</span>
+          </div>
+          <div style="margin-top:0.35rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+            ${schedBadge}
+          </div>
         </div>
       </div>
 
-      <div class="conn-actions" style="margin-top: 1.25rem;">
-        <button class="btn primary btn-backup" onclick="runBackup('${conn.id}')">Backup Now</button>
-        <button class="btn secondary" onclick="dryRun('${conn.id}')">Dry Run</button>
-        <button class="btn secondary" onclick="editConnection('${conn.id}')">Edit</button>
-        <button class="btn danger" onclick="deleteConnection('${conn.id}', '${conn.name}')">Delete</button>
+      <div class="conn-meta-grid">
+        <div class="conn-meta-row">
+          <i class="ph-bold ph-activity" style="color:var(--text-sub);"></i>
+          <span class="conn-meta-label">Status</span>
+          <span class="conn-status conn-meta-value" style="color:var(--success);">Ready</span>
+        </div>
+        <div class="conn-meta-row">
+          <i class="ph-bold ph-clock-clockwise" style="color:var(--text-sub);"></i>
+          <span class="conn-meta-label">Last Run</span>
+          <span class="conn-meta-value">${lastRunText}</span>
+        </div>
+      </div>
+
+      <div class="conn-actions">
+        <button class="btn primary btn-backup conn-btn-backup" onclick="runBackup('${conn.id}')">
+          <i class="ph-bold ph-cloud-arrow-up"></i> Backup Now
+        </button>
+        <div class="conn-secondary-actions">
+          <button class="conn-icon-btn" onclick="dryRun('${conn.id}')" title="Dry Run">
+            <i class="ph-bold ph-eye"></i>
+          </button>
+          <button class="conn-icon-btn" onclick="editConnection('${conn.id}')" title="Edit">
+            <i class="ph-bold ph-pencil-simple"></i>
+          </button>
+          <button class="conn-icon-btn danger" onclick="deleteConnection('${conn.id}', '${conn.name}')" title="Delete">
+            <i class="ph-bold ph-trash"></i>
+          </button>
+        </div>
       </div>
     `;
 
