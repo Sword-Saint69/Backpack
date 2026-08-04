@@ -174,8 +174,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const DB_TYPE_CONFIG = {
     postgres: {
       label: 'Postgres Connection URI',
-      placeholder: 'postgresql://username:password@ep-cool-name.us-east-2.aws.neon.tech/neondb?sslmode=require',
-      hint: '💡 <strong>Format:</strong> <code>postgresql://[user]:[password]@[host]:[port]/[dbname]?sslmode=require</code>'
+      placeholder: 'postgresql://username:password@ep-cool-name.us-east-2.aws.neon.tech/neondb?sslmode=verify-full',
+      hint: '💡 <strong>Format:</strong> <code>postgresql://[user]:[password]@[host]:[port]/[dbname]?sslmode=verify-full</code>'
     },
     mysql: {
       label: 'MySQL Connection URI or Config JSON',

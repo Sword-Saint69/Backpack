@@ -2,8 +2,12 @@ const { Client: PGClient } = require('pg');
 
 class PostgresAdapter {
   async testConnection(config) {
+    let connString = config.secret || '';
+    if (connString.includes('sslmode=require')) {
+      connString = connString.replace('sslmode=require', 'sslmode=verify-full');
+    }
     const client = new PGClient({
-      connectionString: config.secret,
+      connectionString: connString,
       ssl: config.ssl !== false ? { rejectUnauthorized: false } : false,
       connectionTimeoutMillis: 5000
     });
@@ -18,8 +22,12 @@ class PostgresAdapter {
   }
 
   async exportData(config) {
+    let connString = config.secret || '';
+    if (connString.includes('sslmode=require')) {
+      connString = connString.replace('sslmode=require', 'sslmode=verify-full');
+    }
     const client = new PGClient({
-      connectionString: config.secret,
+      connectionString: connString,
       ssl: config.ssl !== false ? { rejectUnauthorized: false } : false
     });
 
