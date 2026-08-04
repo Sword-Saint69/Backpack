@@ -116,15 +116,22 @@ class GitHubUploader {
         }
       } catch (e) {}
 
-      await this.octokit.rest.repos.createOrUpdateFileContents({
-        owner: this.owner,
-        repo: this.repo,
-        path: file.path,
-        message: commitMessage,
-        content: file.content,
-        branch: this.branch,
-        ...(sha ? { sha } : {})
-      });
+      try {
+        await this.octokit.rest.repos.createOrUpdateFileContents({
+          owner: this.owner,
+          repo: this.repo,
+          path: file.path,
+          message: commitMessage,
+          content: file.content,
+          branch: this.branch,
+          ...(sha ? { sha } : {})
+        });
+      } catch (err) {
+        if (err.status === 403 || (err.message && err.message.includes('Resource not accessible'))) {
+          throw new Error(`GitHub Permission Denied (403): Your Personal Access Token does not have write access to repository "${this.owner}/${this.repo}". Ensure your PAT has "Contents: Read & Write" permission.`);
+        }
+        throw err;
+      }
       uploadedPaths.push(file.path);
     }
 
