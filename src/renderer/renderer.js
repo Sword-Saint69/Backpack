@@ -70,9 +70,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const name = document.getElementById('connName').value.trim();
     const type = document.getElementById('connType').value;
     const secret = document.getElementById('connSecret').value.trim();
+    const tablesRaw = document.getElementById('selectedTables').value.trim();
+    const selectedTables = tablesRaw ? tablesRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+    const schedule = {
+      enabled: document.getElementById('schedEnabled').checked,
+      preset: document.getElementById('schedPreset').value,
+      customCron: document.getElementById('schedCustom').value.trim()
+    };
 
     try {
-      await window.api.saveConnection({ id, name, type, secret });
+      await window.api.saveConnection({ id, name, type, secret, selectedTables, schedule });
       modal.classList.remove('active');
       await loadConnections();
     } catch (err) {
@@ -154,6 +162,7 @@ async function loadConnections() {
 
       <div class="conn-actions">
         <button class="btn primary btn-backup" onclick="runBackup('${conn.id}')">Backup Now</button>
+        <button class="btn secondary" onclick="dryRun('${conn.id}')">Dry Run</button>
         <button class="btn secondary" onclick="editConnection('${conn.id}')">Edit</button>
         <button class="btn danger" onclick="deleteConnection('${conn.id}')">Delete</button>
       </div>
@@ -161,6 +170,24 @@ async function loadConnections() {
 
     grid.appendChild(card);
   });
+}
+
+async function dryRun(id) {
+  try {
+    const result = await window.api.dryRunBackup(id);
+    let details = `🔍 Dry-Run Preview for ${result.connectionName}:\n\n`;
+    details += `• Database Type: ${result.type}\n`;
+    details += `• Total Tables/Collections: ${result.tablesCount}\n`;
+    details += `• Total Document/Row Count: ${result.totalRows}\n`;
+    details += `• Estimated Payload Size: ~${result.estimatedSizeMB} MB\n\n`;
+    details += `Table Breakdown:\n`;
+    for (const [tbl, count] of Object.entries(result.tables)) {
+      details += `  - ${tbl}: ${count} rows\n`;
+    }
+    alert(details);
+  } catch (err) {
+    alert(`Dry-run preview failed: ${err.message}`);
+  }
 }
 
 async function runBackup(id) {

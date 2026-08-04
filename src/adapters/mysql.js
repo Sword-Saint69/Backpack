@@ -15,11 +15,16 @@ class MySQLAdapter {
   async exportData(config) {
     const connection = await mysql.createConnection(config.secret);
     try {
-      const [tables] = await connection.query('SHOW TABLES');
+      let [tables] = await connection.query('SHOW TABLES');
+      let tableNames = tables.map(r => Object.values(r)[0]);
+
+      if (config.selectedTables && config.selectedTables.length > 0) {
+        tableNames = tableNames.filter(t => config.selectedTables.includes(t));
+      }
+
       const exportedData = {};
 
-      for (const row of tables) {
-        const tableName = Object.values(row)[0];
+      for (const tableName of tableNames) {
         const [rows] = await connection.query(`SELECT * FROM \`${tableName}\``);
         exportedData[tableName] = rows;
       }

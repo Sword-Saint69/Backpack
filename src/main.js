@@ -146,6 +146,10 @@ ipcMain.handle('run-backup', async (_, id) => {
   });
 });
 
+ipcMain.handle('dry-run-backup', async (_, id) => {
+  return await backupRunner.dryRun(id);
+});
+
 ipcMain.handle('get-logs', async () => {
   return await store.getLogs();
 });

@@ -33,7 +33,10 @@ class PostgresAdapter {
         WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
       `);
 
-      const tables = tablesRes.rows.map(r => r.table_name);
+      let tables = tablesRes.rows.map(r => r.table_name);
+      if (config.selectedTables && config.selectedTables.length > 0) {
+        tables = tables.filter(t => config.selectedTables.includes(t));
+      }
       const exportedData = {};
 
       for (const table of tables) {

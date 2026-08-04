@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('api', {
   testGitHubConnection: () => ipcRenderer.invoke('test-github-connection'),
 
   runBackup: (id) => ipcRenderer.invoke('run-backup', id),
+  dryRunBackup: (id) => ipcRenderer.invoke('dry-run-backup', id),
   getLogs: () => ipcRenderer.invoke('get-logs'),
 
   getStartupSetting: () => ipcRenderer.invoke('get-startup-setting'),

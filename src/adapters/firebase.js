@@ -28,7 +28,10 @@ class FirebaseAdapter {
     const db = app.firestore();
 
     try {
-      const collections = await db.listCollections();
+      let collections = await db.listCollections();
+      if (config.selectedTables && config.selectedTables.length > 0) {
+        collections = collections.filter(c => config.selectedTables.includes(c.id));
+      }
       const exportedData = {};
 
       for (const col of collections) {

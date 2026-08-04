@@ -162,6 +162,11 @@
           <textarea id="connSecret" rows="3" placeholder="postgresql://user:pass@ep-xyz.neon.tech/neondb?sslmode=require"></textarea>
         </div>
 
+        <div class="form-group">
+          <label for="selectedTables">Selective Backup Tables / Collections (Optional)</label>
+          <input type="text" id="selectedTables" placeholder="users, orders, products (Comma-separated, leave blank for ALL)">
+        </div>
+
         <h4 style="margin: 1rem 0 0.5rem 0; font-size: 0.9rem; color: var(--text-main);">Automatic Backup Schedule</h4>
         
         <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">
