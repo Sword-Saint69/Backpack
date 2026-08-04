@@ -1,5 +1,11 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
+
+// Disable GPU acceleration and sandboxing to prevent Chromium GPU/Network crashes on Windows
+app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-software-rasterizer');
+
 const store = require('./store');
 const backupRunner = require('./lib/backupRunner');
 const GitHubUploader = require('./lib/github');
