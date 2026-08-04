@@ -1,3 +1,22 @@
+// ── Web & Electron API Bridge Dual-Support ──────────────────
+if (!window.api) {
+  window.api = {
+    getConnections: () => fetch('/api/connections').then(r => r.json()),
+    saveConnection: (conn) => fetch('/api/connections', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(conn) }).then(r => r.json()),
+    deleteConnection: (id) => fetch(`/api/connections/${id}`, { method: 'DELETE' }).then(r => r.json()),
+    getGitHubConfig: () => fetch('/api/github/config').then(r => r.json()),
+    saveGitHubConfig: (config) => fetch('/api/github/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) }).then(r => r.json()),
+    testGitHubConnection: () => fetch('/api/github/test', { method: 'POST' }).then(r => r.json()),
+    runBackup: (id) => fetch(`/api/backup/${id}`, { method: 'POST' }).then(r => r.json()),
+    dryRunBackup: (id) => fetch(`/api/dry-run/${id}`, { method: 'POST' }).then(r => r.json()),
+    getLogs: () => fetch('/api/logs').then(r => r.json()),
+    getSnapshotHistory: (connName) => Promise.resolve([]),
+    generateRestoreSQL: () => Promise.resolve(''),
+    getStartupSetting: () => Promise.resolve(false),
+    setStartupSetting: () => Promise.resolve()
+  };
+}
+
 // ── Animated List Notification System (unlumen-ui port) ──────────────────
 const NOTIF_ICONS = {
   success: '<i class="ph-bold ph-check-circle"></i>',
