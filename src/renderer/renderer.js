@@ -159,6 +159,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('modalTitle').textContent = 'Add Connection';
     connForm.reset();
     document.getElementById('connId').value = '';
+    const secretEl = document.getElementById('connSecret');
+    secretEl.setAttribute('required', 'true');
+    setSecurityMode('normal');
     updateCredentialHints();
     modal.classList.add('active');
   });
@@ -659,13 +662,41 @@ async function editConnection(id) {
 
   document.getElementById('modalTitle').textContent = 'Edit Connection';
   document.getElementById('connId').value = conn.id;
-  document.getElementById('connName').value = conn.name;
-  document.getElementById('connType').value = conn.type;
+  document.getElementById('connName').value = conn.name || '';
+  document.getElementById('connType').value = conn.type || 'postgres';
   updateCredentialHints();
+
   const secretEl = document.getElementById('connSecret');
   secretEl.value = '';
   secretEl.removeAttribute('required');
-  secretEl.placeholder = '(Encrypted Secret Preserved — enter new value to overwrite)';
+  secretEl.placeholder = '(Encrypted Credentials Preserved — enter new value to overwrite)';
+
+  document.getElementById('selectedTables').value = conn.selectedTables ? conn.selectedTables.join(', ') : '';
+
+  // Security mode selection
+  if (conn.encryptionPassword) {
+    setSecurityMode('encrypt');
+    document.getElementById('encryptionPassword').value = conn.encryptionPassword;
+  } else if (conn.compress) {
+    setSecurityMode('gzip');
+  } else {
+    setSecurityMode('normal');
+  }
+
+  // Schedule settings
+  const schedEnabledSwitch = document.getElementById('schedEnabled');
+  const groupSchedulerFields = document.getElementById('groupSchedulerFields');
+  if (schedEnabledSwitch) {
+    schedEnabledSwitch.checked = !!(conn.schedule && conn.schedule.enabled);
+    if (groupSchedulerFields) {
+      groupSchedulerFields.style.display = schedEnabledSwitch.checked ? 'flex' : 'none';
+    }
+  }
+  if (conn.schedule) {
+    if (conn.schedule.preset) document.getElementById('schedPreset').value = conn.schedule.preset;
+    if (conn.schedule.customCron) document.getElementById('schedCustom').value = conn.schedule.customCron;
+  }
+
   document.getElementById('connectionModal').classList.add('active');
 }
 
