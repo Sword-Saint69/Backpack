@@ -1,3 +1,38 @@
+// ── Animated List Notification System (unlumen-ui port) ──────────────────
+const NOTIF_ICONS = {
+  success: '<i class="ph-bold ph-check-circle"></i>',
+  error:   '<i class="ph-bold ph-x-circle"></i>',
+  info:    '<i class="ph-bold ph-info"></i>',
+  warning: '<i class="ph-bold ph-warning"></i>',
+};
+
+function showNotification(title, message, type = 'info', duration = 4500) {
+  const list = document.getElementById('notifList');
+  if (!list) return;
+
+  const item = document.createElement('div');
+  item.className = 'notif-item';
+  item.innerHTML = `
+    <div class="notif-icon ${type}">${NOTIF_ICONS[type] || NOTIF_ICONS.info}</div>
+    <div class="notif-body">
+      <div class="notif-title">${title}</div>
+      ${message ? `<div class="notif-msg">${message}</div>` : ''}
+    </div>
+    <button class="notif-close" aria-label="Dismiss">&times;</button>
+  `;
+
+  list.prepend(item);
+
+  const dismiss = () => {
+    item.classList.add('removing');
+    item.addEventListener('animationend', () => item.remove(), { once: true });
+  };
+
+  item.querySelector('.notif-close').addEventListener('click', dismiss);
+  item.addEventListener('click', dismiss);
+  if (duration > 0) setTimeout(dismiss, duration);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   // ── Dock Navigation ──
   const dockItems = document.querySelectorAll('.dock-item[data-tab]');
@@ -146,20 +181,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       await window.api.saveGitHubConfig({ repo, branch, token });
-      alert('GitHub settings saved successfully!');
+      showNotification('Settings Saved', `GitHub target set to ${repo}`, 'success');
       await loadGitHubConfig();
-      await refreshGithubGating(); // re-enable Backup Now buttons immediately
+      await refreshGithubGating();
     } catch (err) {
-      alert(`Error saving GitHub settings: ${err.message}`);
+      showNotification('Save Failed', err.message, 'error');
     }
   });
 
   document.getElementById('btnTestGitHub').addEventListener('click', async () => {
     try {
       await window.api.testGitHubConnection();
-      alert('GitHub Connection Successful!');
+      showNotification('GitHub Connected', 'Repository access token is valid', 'success');
     } catch (err) {
-      alert(`GitHub Connection Failed: ${err.message}`);
+      showNotification('Connection Failed', err.message, 'error');
     }
   });
 
@@ -370,7 +405,7 @@ async function dryRun(id) {
 
     document.getElementById('dryRunModal').classList.add('active');
   } catch (err) {
-    alert(`Dry-run preview failed: ${err.message}`);
+    showNotification('Dry-run Failed', err.message, 'error');
   }
 }
 
@@ -385,6 +420,8 @@ async function runBackup(id) {
   const card = document.querySelector(`[data-card-id="${id}"]`);
   const statusEl = card?.querySelector('.conn-status');
   const backupBtn = card?.querySelector('.btn-backup');
+  const connections = await window.api.getConnections();
+  const conn = connections.find(c => c.id === id);
 
   if (backupBtn) {
     backupBtn.disabled = true;
@@ -403,14 +440,14 @@ async function runBackup(id) {
       statusEl.textContent = 'Ready (Success)';
       statusEl.style.color = 'var(--success)';
     }
+    showNotification('Backup Complete', `${conn?.name || 'Database'} snapshot pushed to GitHub`, 'success');
     await loadConnections();
-    alert('Backup completed successfully!');
   } catch (err) {
     if (statusEl) {
       statusEl.textContent = 'Failed';
       statusEl.style.color = 'var(--danger)';
     }
-    alert(`Backup failed: ${err.message}`);
+    showNotification('Backup Failed', err.message, 'error');
   } finally {
     if (backupBtn) {
       backupBtn.disabled = false;

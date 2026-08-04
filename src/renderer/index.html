@@ -145,36 +145,39 @@
           </div>
         </header>
 
+        <!-- Startup Launch with Apple Switch -->
         <div class="card form-card" style="margin-bottom: 2rem;">
           <h3 style="margin-bottom: 1rem;">System Launch</h3>
-          <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between;">
+          <div class="apple-switch-wrap">
             <div>
-              <label style="font-size: 0.95rem; color: var(--text-main);">Launch Backpack on System Startup</label>
-              <p style="font-size: 0.8rem; color: var(--text-muted);">Starts Backpack minimized in tray when logging
-                into your operating system.</p>
+              <label style="font-size: 0.95rem; color: var(--text-main); font-weight: 500;">Launch Backpack on System Startup</label>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem;">Starts Backpack minimized in tray when logging into your OS.</p>
             </div>
-            <input type="checkbox" id="chkStartup" style="width: 20px; height: 20px; cursor: pointer;">
+            <label class="apple-switch">
+              <input type="checkbox" id="chkStartup">
+              <span class="apple-track"><span class="apple-thumb"></span></span>
+            </label>
           </div>
         </div>
 
         <div class="card form-card">
-          <h3 style="margin-bottom: 1rem;">GitHub Repository Target</h3>
+          <h3 style="margin-bottom: 1.25rem;">GitHub Repository Target</h3>
           <form id="githubForm">
-            <div class="form-group">
-              <label for="ghRepo">Repository (owner/repo)</label>
-              <input type="text" id="ghRepo" placeholder="e.g. myusername/my-backups" required>
+            <div class="floating-group">
+              <input class="floating-input" type="text" id="ghRepo" placeholder=" " required>
+              <label class="floating-label" for="ghRepo">Repository (owner/repo)</label>
             </div>
 
-            <div class="form-group">
-              <label for="ghBranch">Target Branch</label>
-              <input type="text" id="ghBranch" value="main" placeholder="main" required>
+            <div class="floating-group">
+              <input class="floating-input" type="text" id="ghBranch" placeholder=" " required>
+              <label class="floating-label" for="ghBranch">Target Branch</label>
             </div>
 
-            <div class="form-group">
-              <label for="ghToken">Personal Access Token (PAT)</label>
-              <input type="password" id="ghToken" placeholder="ghp_... or github_pat_...">
-              <small>Requires fine-grained PAT with <code>Contents: Read and write</code> permission.</small>
+            <div class="floating-group">
+              <input class="floating-input" type="password" id="ghToken" placeholder=" ">
+              <label class="floating-label" for="ghToken">Personal Access Token (PAT)</label>
             </div>
+            <small style="display:block; margin-top:-0.75rem; margin-bottom:1rem; color:var(--text-muted); font-size:0.78rem;">Requires fine-grained PAT with <code>Contents: Read and write</code> permission.</small>
 
             <div class="form-actions">
               <button type="button" class="btn secondary" id="btnTestGitHub">Test Connection</button>
@@ -249,15 +252,13 @@
 
       <form id="connectionForm">
         <input type="hidden" id="connId">
-        
-        <div class="form-group">
-          <label for="connName">Connection Name</label>
-          <input type="text" id="connName" placeholder="e.g. Production Postgres DB" required>
+            <div class="floating-group">
+          <input class="floating-input" type="text" id="connName" placeholder=" " required>
+          <label class="floating-label" for="connName">Connection Name</label>
         </div>
 
-        <div class="form-group">
-          <label for="connType">Database Type</label>
-          <select id="connType" required>
+        <div class="floating-group">
+          <select class="floating-input" id="connType" required style="padding-top: 0.9rem;">
             <option value="postgres">PostgreSQL / NeonDB</option>
             <option value="mysql">MySQL</option>
             <option value="firebase">Firebase Firestore</option>
@@ -265,21 +266,22 @@
             <option value="mongodb">MongoDB / Atlas</option>
             <option value="supabase">Supabase REST API</option>
           </select>
+          <label class="floating-label" for="connType" style="top:0; font-size:0.72rem; color:var(--text-muted);">Database Type</label>
         </div>
 
-        <div class="form-group">
-          <label for="connSecret" id="connSecretLabel">Connection Credentials / Connection String</label>
-          <textarea id="connSecret" rows="3" placeholder="postgresql://user:pass@ep-xyz.neon.tech/neondb?sslmode=require"></textarea>
+        <div class="floating-group">
+          <textarea class="floating-input floating-textarea" id="connSecret" placeholder=" " rows="3"></textarea>
+          <label class="floating-label floating-textarea" for="connSecret" id="connSecretLabel">Connection String / Credentials</label>
         </div>
 
-        <div class="form-group">
-          <label for="selectedTables">Selective Backup Tables / Collections (Optional)</label>
-          <input type="text" id="selectedTables" placeholder="users, orders, products (Comma-separated, leave blank for ALL)">
+        <div class="floating-group">
+          <input class="floating-input" type="text" id="selectedTables" placeholder=" ">
+          <label class="floating-label" for="selectedTables">Selective Tables (comma-separated, blank = ALL)</label>
         </div>
 
-        <!-- Watermelon UI Pricing / Compression Selector -->
+        <!-- Payload Security Selector -->
         <div class="form-group">
-          <label>Payload Security & Compression</label>
+          <label style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem; display:block;">Payload Security &amp; Compression</label>
           <div class="watermelon-tab-group">
             <button type="button" class="watermelon-tab-btn active" id="btnTabNormal">Standard JSON</button>
             <button type="button" class="watermelon-tab-btn" id="btnTabGzip">Gzip Compressed</button>
@@ -289,20 +291,20 @@
 
         <input type="checkbox" id="chkCompress" style="display: none;">
 
-        <div class="form-group" id="groupEncPassword" style="display: none;">
-          <label for="encryptionPassword">Client-Side AES Encryption Password</label>
-          <input type="password" id="encryptionPassword" placeholder="Password to encrypt JSON payload at rest on GitHub">
+        <div class="floating-group" id="groupEncPassword" style="display: none;">
+          <input class="floating-input" type="password" id="encryptionPassword" placeholder=" ">
+          <label class="floating-label" for="encryptionPassword">AES Encryption Password</label>
         </div>
 
-        <!-- Watermelon UI Style Toggle Switch for Scheduler -->
-        <div class="watermelon-toggle-card">
+        <!-- Apple Switch for Scheduler Toggle -->
+        <div class="apple-switch-wrap" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 1rem;">
           <div>
-            <span style="font-weight: 500; font-size: 0.95rem;">Enable Automatic Cron Schedule</span>
+            <span style="font-weight: 500; font-size: 0.9rem;">Enable Automatic Cron Schedule</span>
             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Automate unattended backups in the background.</p>
           </div>
-          <label class="switch">
+          <label class="apple-switch">
             <input type="checkbox" id="schedEnabled">
-            <span class="slider round"></span>
+            <span class="apple-track"><span class="apple-thumb"></span></span>
           </label>
         </div>
 
@@ -375,6 +377,9 @@
       </button>
     </div>
   </div>
+
+  <!-- Animated List Notification Container (unlumen-ui port) -->
+  <div class="notif-list" id="notifList"></div>
 
   <script src="renderer.js"></script>
 </body>
