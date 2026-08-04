@@ -106,6 +106,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnSidebarConfigure')?.addEventListener('click', () => switchToTab('settings'));
   document.getElementById('btnBannerConfigure')?.addEventListener('click', () => switchToTab('settings'));
 
+  // Dismissible banner
+  document.getElementById('btnBannerDismiss')?.addEventListener('click', () => {
+    const banner = document.getElementById('githubWarningBanner');
+    if (banner) banner.style.display = 'none';
+  });
+
   function switchToTab(tabName) {
     dockItems.forEach(b => b.classList.remove('active'));
     tabPages.forEach(p => p.classList.remove('active'));
@@ -128,6 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load Data
   await loadGitHubConfig();
   await loadConnections();
+  await refreshGithubGating();
 
   // Settings Form
   const githubForm = document.getElementById('githubForm');
@@ -141,6 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       await window.api.saveGitHubConfig({ repo, branch, token });
       alert('GitHub settings saved successfully!');
       await loadGitHubConfig();
+      await refreshGithubGating(); // re-enable Backup Now buttons immediately
     } catch (err) {
       alert(`Error saving GitHub settings: ${err.message}`);
     }
@@ -257,6 +265,20 @@ async function loadGitHubConfig() {
   }
 }
 
+async function refreshGithubGating() {
+  try {
+    const config = await window.api.getGitHubConfig();
+    const isConfigured = !!(config.ownerRepo && config.hasToken);
+    document.querySelectorAll('.btn-backup').forEach(btn => {
+      btn.disabled = !isConfigured;
+      btn.title = isConfigured ? '' : 'Configure a GitHub target in Settings first';
+    });
+  } catch (e) {
+    // If we can't check, leave buttons enabled to avoid blocking
+    console.error('gating check failed', e);
+  }
+}
+
 async function loadConnections() {
   const grid = document.getElementById('connectionsGrid');
   grid.innerHTML = '';
@@ -310,6 +332,9 @@ async function loadConnections() {
 
     grid.appendChild(card);
   });
+
+  // Gate Backup Now buttons based on GitHub config
+  await refreshGithubGating();
 }
 
 async function dryRun(id) {

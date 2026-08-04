@@ -127,14 +127,16 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 5px;
   position: relative;
   cursor: pointer;
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: bottom center;
   border: none;
   background: none;
-  padding: 0;
+  padding: 2px 4px 0;
   outline: none;
+  -webkit-app-region: no-drag;
 }
 
 .dock-icon {
@@ -176,27 +178,47 @@ body {
   background: rgba(59, 130, 246, 0.25);
 }
 
-/* Active dot indicator */
-.dock-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
+/* Active dot indicator — sits below the text label, not after dock-item since label is now inside */
+.dock-item.active .dock-dot {
   width: 5px;
   height: 5px;
   border-radius: 50%;
   background: var(--primary);
   box-shadow: 0 0 6px var(--primary);
+  margin-top: 1px;
 }
 
-/* Tooltip label */
+.dock-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+/* Persistent visible label below each dock icon (iOS tab-bar style) */
 .dock-label {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #71717a;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  transition: color 0.2s ease;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.dock-item:hover .dock-label,
+.dock-item.active .dock-label {
+  color: #60a5fa;
+}
+
+/* Tooltip above icon — shown on hover for extra context */
+.dock-tooltip {
   position: absolute;
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 8px);
   left: 50%;
-  transform: translateX(-50%);
-  background: rgba(10,10,15,0.9);
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(10,10,15,0.92);
   color: #f4f4f5;
   font-size: 0.72rem;
   font-weight: 500;
@@ -207,11 +229,10 @@ body {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s ease, transform 0.15s ease;
-  transform: translateX(-50%) translateY(4px);
   z-index: 200;
 }
 
-.dock-item:hover .dock-label {
+.dock-item:hover .dock-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
@@ -232,8 +253,8 @@ body {
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
-  /* leave room for the dock at bottom */
-  padding-bottom: 96px;
+  /* leave room for the dock (icon 50px + label ~14px + dot + padding) */
+  padding-bottom: 110px;
 }
 
 .tab-page {
@@ -347,6 +368,56 @@ body {
   background: var(--danger);
   color: #fff;
 }
+
+/* Disabled Backup Now button when GitHub is unconfigured */
+.btn-backup:disabled {
+  background: rgba(255,255,255,0.05) !important;
+  color: #52525b !important;
+  border: 1px solid rgba(255,255,255,0.08);
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  opacity: 1;
+}
+
+/* Banner dismiss button */
+.banner-dismiss {
+  background: transparent;
+  border: none;
+  color: #71717a;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0 0 0.5rem;
+  line-height: 1;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.banner-dismiss:hover { color: #f4f4f5; }
+
+/* Lock icon tooltip */
+[data-tooltip] {
+  position: relative;
+  cursor: help;
+}
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,10,15,0.92);
+  color: #f4f4f5;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 999;
+}
+[data-tooltip]:hover::after { opacity: 1; }
 
 /* Form Styling */
 .form-card {

@@ -22,6 +22,9 @@
           <h1>Backpack</h1>
           <span class="version">v1.2 Automation</span>
         </div>
+        <span data-tooltip="All credentials encrypted via OS keychain (safeStorage)" style="margin-left: 0.5rem; font-size: 0.9rem; color: #52525b;">
+          <i class="ph-bold ph-lock-simple" style="vertical-align: middle;"></i>
+        </span>
       </div>
       <div class="status-box" id="githubStatusSummary">
         <span class="status-indicator warning"></span>
@@ -36,15 +39,18 @@
       <section id="tab-connections" class="tab-page active">
         <!-- Persistent Warning Banner when GitHub Target is Unconfigured -->
         <div id="githubWarningBanner" class="card" style="display: none; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <i class="ph-bold ph-warning" style="font-size: 1.35rem; color: #f59e0b;"></i>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1;">
+              <i class="ph-bold ph-warning" style="font-size: 1.35rem; color: #f59e0b; flex-shrink: 0;"></i>
               <div>
                 <strong style="color: #f59e0b; font-size: 0.95rem;">GitHub target not configured</strong>
                 <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.15rem;">Backups cannot be pushed to storage until repository and access token settings are saved.</p>
               </div>
             </div>
-            <button class="btn primary" id="btnBannerConfigure" style="background: #f59e0b; color: #000; font-weight: 600;">Configure Now</button>
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0;">
+              <button class="btn primary" id="btnBannerConfigure" style="background: #f59e0b; color: #000; font-weight: 600;">Configure Now</button>
+              <button class="banner-dismiss" id="btnBannerDismiss" title="Dismiss">&#215;</button>
+            </div>
           </div>
         </div>
 
@@ -344,20 +350,28 @@
       <button class="dock-item active" data-tab="connections" aria-label="Connections">
         <div class="dock-icon"><i class="ph-bold ph-plugs-connected"></i></div>
         <span class="dock-label">Connections</span>
+        <span class="dock-dot"></span>
+        <span class="dock-tooltip">Manage database connections</span>
       </button>
       <button class="dock-item" data-tab="logs" aria-label="Audit Logs">
         <div class="dock-icon"><i class="ph-bold ph-clipboard-text"></i></div>
         <span class="dock-label">Audit Logs</span>
+        <span class="dock-dot"></span>
+        <span class="dock-tooltip">Backup history & results</span>
       </button>
       <div class="dock-separator"></div>
-      <button class="dock-item" data-tab="restore" aria-label="Restore Wizard (v1.5 Preview)">
+      <button class="dock-item" data-tab="restore" aria-label="Restore Wizard">
         <div class="dock-icon"><i class="ph-bold ph-arrow-counter-clockwise"></i></div>
-        <span class="dock-label">Restore Wizard · v1.5</span>
+        <span class="dock-label">Restore</span>
+        <span class="dock-dot"></span>
+        <span class="dock-tooltip">Restore Wizard · v1.5 Preview</span>
       </button>
       <div class="dock-separator"></div>
       <button class="dock-item" data-tab="settings" aria-label="Settings">
         <div class="dock-icon"><i class="ph-bold ph-gear-six"></i></div>
         <span class="dock-label">Settings</span>
+        <span class="dock-dot"></span>
+        <span class="dock-tooltip">GitHub target & preferences</span>
       </button>
     </div>
   </div>
