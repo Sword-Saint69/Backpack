@@ -392,28 +392,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadGitHubConfig() {
   try {
-    const config = await window.api.getGitHubConfig();
+    const config = (await window.api.getGitHubConfig()) || {};
     const statusBox = document.getElementById('githubStatusSummary');
     const warningBanner = document.getElementById('githubWarningBanner');
 
     if (config.ownerRepo && config.hasToken) {
-      document.getElementById('ghRepo').value = config.ownerRepo;
-      document.getElementById('ghBranch').value = config.branch || 'main';
-      statusBox.innerHTML = `
-        <span class="status-indicator success"></span>
-        <span class="status-text">Target: ${config.ownerRepo}</span>
-      `;
+      const ghRepoInput = document.getElementById('ghRepo');
+      const ghBranchInput = document.getElementById('ghBranch');
+      if (ghRepoInput) ghRepoInput.value = config.ownerRepo;
+      if (ghBranchInput) ghBranchInput.value = config.branch || 'main';
+      if (statusBox) {
+        statusBox.innerHTML = `
+          <span class="status-indicator success"></span>
+          <span class="status-text">Target: ${config.ownerRepo}</span>
+        `;
+      }
       if (warningBanner) warningBanner.style.display = 'none';
     } else {
-      statusBox.innerHTML = `
-        <span class="status-indicator warning"></span>
-        <span class="status-text">GitHub unconfigured</span>
-        <button id="btnSidebarConfigure" onclick="document.querySelector('[data-tab=settings]').click()" style="margin-left: auto; font-size: 0.75rem; background: transparent; border: none; color: var(--primary); cursor: pointer; text-decoration: underline;">Configure</button>
-      `;
+      if (statusBox) {
+        statusBox.innerHTML = `
+          <span class="status-indicator warning"></span>
+          <span class="status-text">GitHub unconfigured</span>
+          <button id="btnSidebarConfigure" onclick="document.querySelector('[data-tab=settings]')?.click()" style="margin-left: auto; font-size: 0.75rem; background: transparent; border: none; color: var(--primary); cursor: pointer; text-decoration: underline;">Configure</button>
+        `;
+      }
       if (warningBanner) warningBanner.style.display = 'block';
     }
   } catch (e) {
-    console.error(e);
+    console.error('loadGitHubConfig error:', e);
   }
 }
 
@@ -433,11 +439,19 @@ async function refreshGithubGating() {
 
 async function loadConnections() {
   const grid = document.getElementById('connectionsGrid');
+  if (!grid) return;
   grid.innerHTML = '';
-  const connections = await window.api.getConnections();
-  const logs = await window.api.getLogs();
+  
+  let connections = [];
+  let logs = [];
+  try {
+    connections = (await window.api.getConnections()) || [];
+    logs = (await window.api.getLogs()) || [];
+  } catch (err) {
+    console.error('Error fetching connections/logs:', err);
+  }
 
-  if (connections.length === 0) {
+  if (!Array.isArray(connections) || connections.length === 0) {
     grid.innerHTML = `
       <div class="card" style="border: 1.5px dashed rgba(255,255,255,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; text-align: center; grid-column: 1 / -1; background: rgba(255,255,255,0.02);">
         <div style="width:56px;height:56px;border-radius:16px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
