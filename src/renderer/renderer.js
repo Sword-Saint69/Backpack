@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById(`tab-${targetTab}`).classList.add('active');
 
       if (targetTab === 'logs') loadLogs();
+      if (targetTab === 'restore') loadRestoreConnections();
     });
   });
 
@@ -223,8 +224,70 @@ async function deleteConnection(id) {
   }
 }
 
+async function loadRestoreConnections() {
+  const select = document.getElementById('restoreSelectConn');
+  select.innerHTML = '';
+  const connections = await window.api.getConnections();
+  connections.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.name;
+    opt.textContent = `${c.name} (${c.type})`;
+    select.appendChild(opt);
+  });
+}
+
+document.getElementById('btnFetchSnapshots').addEventListener('click', async () => {
+  const connName = document.getElementById('restoreSelectConn').value;
+  if (!connName) return alert('Select a connection first');
+
+  try {
+    const snapshots = await window.api.getSnapshotHistory(connName);
+    const tbody = document.getElementById('snapshotsTableBody');
+    tbody.innerHTML = '';
+    document.getElementById('snapshotResultsContainer').style.display = 'block';
+
+    if (snapshots.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No snapshots found for ${connName}.</td></tr>`;
+      return;
+    }
+
+    snapshots.forEach(s => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><code>${s.name}</code></td>
+        <td>${s.sizeMB} MB</td>
+        <td>
+          <button class="btn primary" onclick="generateRestoreSQL('${s.path}')">Generate SQL Replay</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    alert(`Failed fetching snapshots: ${err.message}`);
+  }
+});
+
+async function generateRestoreSQL(path) {
+  const password = prompt('Enter AES payload decryption password (leave blank if unencrypted):') || '';
+  const dialect = prompt('Select SQL dialect (postgres or mysql):', 'postgres') || 'postgres';
+
+  try {
+    const sql = await window.api.generateRestoreSQL(path, dialect, password);
+    const blob = new Blob([sql], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `restore-${Date.now()}.sql`;
+    a.click();
+    alert('SQL Replay script generated and downloaded successfully!');
+  } catch (err) {
+    alert(`Failed generating restore SQL: ${err.message}`);
+  }
+}
+
 async function loadLogs() {
   const tbody = document.getElementById('logsTableBody');
+  if (!tbody) return;
   tbody.innerHTML = '';
   const logs = await window.api.getLogs();
 

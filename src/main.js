@@ -150,6 +150,17 @@ ipcMain.handle('dry-run-backup', async (_, id) => {
   return await backupRunner.dryRun(id);
 });
 
+ipcMain.handle('get-snapshot-history', async (_, connName) => {
+  const restoreEngine = require('./lib/restoreEngine');
+  return await restoreEngine.getSnapshotHistory(connName);
+});
+
+ipcMain.handle('generate-restore-sql', async (_, { path, dialect, password }) => {
+  const restoreEngine = require('./lib/restoreEngine');
+  const data = await restoreEngine.fetchAndDecodeSnapshot(path, password);
+  return restoreEngine.generateSQLInsertScript(data, dialect);
+});
+
 ipcMain.handle('get-logs', async () => {
   return await store.getLogs();
 });

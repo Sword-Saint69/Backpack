@@ -23,6 +23,9 @@
         <button class="nav-btn active" data-tab="connections">
           <span class="icon">🔌</span> Connections
         </button>
+        <button class="nav-btn" data-tab="restore">
+          <span class="icon">🔄</span> Restore Wizard
+        </button>
         <button class="nav-btn" data-tab="logs">
           <span class="icon">📜</span> Audit Logs
         </button>
@@ -51,6 +54,44 @@
 
         <div class="cards-grid" id="connectionsGrid">
           <!-- Connection cards dynamically injected here -->
+        </div>
+      </section>
+
+      <!-- Restore Tab -->
+      <section id="tab-restore" class="tab-page">
+        <header class="page-header">
+          <div>
+            <h2>Restore Wizard</h2>
+            <p>Browse backup commit snapshots, decrypt payloads, and generate SQL replay scripts.</p>
+          </div>
+        </header>
+
+        <div class="card form-card" style="margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label for="restoreSelectConn">Select Connection</label>
+            <select id="restoreSelectConn">
+              <!-- Options populated dynamically -->
+            </select>
+          </div>
+          <button class="btn primary" id="btnFetchSnapshots">Fetch Snapshots from GitHub</button>
+        </div>
+
+        <div id="snapshotResultsContainer" style="display: none;">
+          <h3 style="margin-bottom: 1rem;">Available Snapshots</h3>
+          <div class="table-container" style="margin-bottom: 1.5rem;">
+            <table class="logs-table">
+              <thead>
+                <tr>
+                  <th>Snapshot File</th>
+                  <th>Size</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="snapshotsTableBody">
+                <!-- Snapshots populated dynamically -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -154,6 +195,7 @@
             <option value="postgres">PostgreSQL / NeonDB</option>
             <option value="mysql">MySQL</option>
             <option value="firebase">Firebase Firestore</option>
+            <option value="sqlite">SQLite Database</option>
           </select>
         </div>
 

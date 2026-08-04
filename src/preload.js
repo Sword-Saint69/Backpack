@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('api', {
 
   runBackup: (id) => ipcRenderer.invoke('run-backup', id),
   dryRunBackup: (id) => ipcRenderer.invoke('dry-run-backup', id),
+  getSnapshotHistory: (connName) => ipcRenderer.invoke('get-snapshot-history', connName),
+  generateRestoreSQL: (path, dialect, password) => ipcRenderer.invoke('generate-restore-sql', { path, dialect, password }),
   getLogs: () => ipcRenderer.invoke('get-logs'),
 
   getStartupSetting: () => ipcRenderer.invoke('get-startup-setting'),

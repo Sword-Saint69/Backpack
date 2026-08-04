@@ -1,11 +1,13 @@
 const postgres = require('./postgres');
 const mysql = require('./mysql');
 const firebase = require('./firebase');
+const sqlite = require('./sqlite');
 
 const adapters = {
   postgres,
   mysql,
-  firebase
+  firebase,
+  sqlite
 };
 
 function getAdapter(type) {
