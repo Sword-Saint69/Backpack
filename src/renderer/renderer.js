@@ -33,6 +33,54 @@ function showNotification(title, message, type = 'info', duration = 4500) {
   if (duration > 0) setTimeout(dismiss, duration);
 }
 
+// ── Inline Disclosure Menu Helpers (watermelon.sh port) ──────────────────
+function toggleDisclosureMenu(id) {
+  const menu = document.getElementById(`disc-menu-${id}`);
+  if (!menu) return;
+  const isOpen = menu.classList.contains('open');
+  // Close all other open menus first
+  document.querySelectorAll('.disclosure-menu.open').forEach(m => {
+    m.classList.remove('open');
+  });
+  if (!isOpen) {
+    menu.classList.add('open');
+    hideDisclosureConfirm(id);
+  }
+}
+
+function closeDisclosureMenu(id) {
+  const menu = document.getElementById(`disc-menu-${id}`);
+  if (menu) menu.classList.remove('open');
+  hideDisclosureConfirm(id);
+}
+
+function showDisclosureConfirm(id) {
+  const slideDel = document.getElementById(`disc-slide-del-${id}`);
+  const slideConf = document.getElementById(`disc-slide-conf-${id}`);
+  if (slideDel && slideConf) {
+    slideDel.classList.add('hidden');
+    slideConf.classList.add('visible');
+  }
+}
+
+function hideDisclosureConfirm(id) {
+  const slideDel = document.getElementById(`disc-slide-del-${id}`);
+  const slideConf = document.getElementById(`disc-slide-conf-${id}`);
+  if (slideDel && slideConf) {
+    slideDel.classList.remove('hidden');
+    slideConf.classList.remove('visible');
+  }
+}
+
+// Global click outside to close disclosure menus
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.disclosure-container')) {
+    document.querySelectorAll('.disclosure-menu.open').forEach(m => {
+      m.classList.remove('open');
+    });
+  }
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
   // ── Dock Navigation ──
   const dockItems = document.querySelectorAll('.dock-item[data-tab]');
@@ -387,16 +435,32 @@ async function loadConnections() {
         <button class="btn primary btn-backup conn-btn-backup" onclick="runBackup('${conn.id}')">
           <i class="ph-bold ph-cloud-arrow-up"></i> Backup Now
         </button>
-        <div class="conn-secondary-actions">
-          <button class="conn-icon-btn" onclick="dryRun('${conn.id}')" title="Dry Run">
-            <i class="ph-bold ph-eye"></i>
+        <div class="disclosure-container" id="disc-${conn.id}">
+          <button class="disclosure-trigger" onclick="toggleDisclosureMenu('${conn.id}')" title="More Options">
+            <i class="ph-bold ph-dots-three-vertical"></i>
           </button>
-          <button class="conn-icon-btn" onclick="editConnection('${conn.id}')" title="Edit">
-            <i class="ph-bold ph-pencil-simple"></i>
-          </button>
-          <button class="conn-icon-btn danger" onclick="deleteConnection('${conn.id}', '${conn.name}')" title="Delete">
-            <i class="ph-bold ph-trash"></i>
-          </button>
+          <div class="disclosure-menu" id="disc-menu-${conn.id}">
+            <div class="disclosure-header">Options</div>
+            <div class="disclosure-body">
+              <button class="disclosure-item" onclick="closeDisclosureMenu('${conn.id}'); dryRun('${conn.id}');">
+                <i class="ph-bold ph-eye"></i> Dry Run Preview
+              </button>
+              <button class="disclosure-item" onclick="closeDisclosureMenu('${conn.id}'); editConnection('${conn.id}');">
+                <i class="ph-bold ph-pencil-simple"></i> Edit Credentials
+              </button>
+            </div>
+            <div class="disclosure-footer">
+              <div class="disclosure-footer-slide slide-delete" id="disc-slide-del-${conn.id}">
+                <button class="disclosure-item danger-item" onclick="showDisclosureConfirm('${conn.id}')">
+                  <i class="ph-bold ph-trash"></i> Delete Connection
+                </button>
+              </div>
+              <div class="disclosure-footer-slide slide-confirm" id="disc-slide-conf-${conn.id}">
+                <button class="btn-confirm-delete" onclick="closeDisclosureMenu('${conn.id}'); deleteConnection('${conn.id}', '${conn.name}');">Yes, Delete</button>
+                <button class="btn-cancel-delete" onclick="hideDisclosureConfirm('${conn.id}')">Cancel</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     `;
