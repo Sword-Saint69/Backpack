@@ -305,9 +305,24 @@
           <input type="text" id="schedCustom" placeholder="0 */6 * * * (Every 6 hours)">
         </div>
 
+        <!-- Watermelon UI Add Connection Confirmation Card -->
+        <div class="watermelon-confirmation-card">
+          <div class="watermelon-confirmation-header">
+            <div class="watermelon-confirmation-icon">✓</div>
+            <div>
+              <h4 style="font-size: 0.95rem; font-weight: 600; color: #f4f4f5;">Add Connection Confirmation</h4>
+              <p style="font-size: 0.75rem; color: #a1a1aa;">Ready to receive and sync encrypted database snapshots to GitHub.</p>
+            </div>
+          </div>
+        </div>
+
         <div class="modal-actions" style="margin-top: 1.5rem;">
-          <button type="button" class="btn secondary" id="btnTestConn">Test Connection</button>
-          <button type="submit" class="btn primary" style="padding: 0.7rem 1.5rem; font-weight: 600;">Save Connection</button>
+          <button type="button" class="save-toggle-btn secondary-toggle" id="btnTestConn">
+            <span class="btn-text">Test Connection</span>
+          </button>
+          <button type="submit" class="save-toggle-btn primary-toggle" id="btnSaveConn">
+            <span class="btn-text">Save Connection</span>
+          </button>
         </div>
       </form>
     </div>

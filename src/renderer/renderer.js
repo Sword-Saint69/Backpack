@@ -112,9 +112,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  function animateSaveToggle(btn, idleText, savedText, asyncWork) {
+    btn.classList.add('loading');
+    btn.innerHTML = `<div class="save-spinner"></div>`;
+
+    setTimeout(async () => {
+      try {
+        await asyncWork();
+        btn.classList.remove('loading');
+        btn.classList.add('saved');
+        btn.innerHTML = `✓ ${savedText}`;
+
+        setTimeout(() => {
+          btn.classList.remove('saved');
+          btn.innerHTML = `<span class="btn-text">${idleText}</span>`;
+        }, 1200);
+      } catch (err) {
+        btn.classList.remove('loading');
+        btn.innerHTML = `<span class="btn-text">${idleText}</span>`;
+        alert(`Operation Failed: ${err.message}`);
+      }
+    }, 600);
+  }
+
   // Save Connection Form
   connForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const btnSaveConn = document.getElementById('btnSaveConn');
+
     const id = document.getElementById('connId').value || Date.now().toString();
     const name = document.getElementById('connName').value.trim();
     const type = document.getElementById('connType').value;
@@ -131,27 +156,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       customCron: document.getElementById('schedCustom').value.trim()
     };
 
-    try {
+    animateSaveToggle(btnSaveConn, 'Save Connection', 'Saved', async () => {
       await window.api.saveConnection({ id, name, type, secret, selectedTables, compress, encryptionPassword, schedule });
-      modal.classList.remove('active');
+      setTimeout(() => modal.classList.remove('active'), 500);
       await loadConnections();
-    } catch (err) {
-      alert(`Error saving connection: ${err.message}`);
-    }
+    });
   });
 
   // Test Connection in Modal
   document.getElementById('btnTestConn').addEventListener('click', async () => {
+    const btnTestConn = document.getElementById('btnTestConn');
     const type = document.getElementById('connType').value;
     const secret = document.getElementById('connSecret').value.trim();
     if (!secret) return alert('Please provide a connection secret first.');
 
-    try {
+    animateSaveToggle(btnTestConn, 'Test Connection', 'Connected!', async () => {
       await window.api.testConnection({ type, secret });
-      alert('Database Connection Successful!');
-    } catch (err) {
-      alert(`Connection Failed: ${err.message}`);
-    }
+    });
   });
 
   // Live progress updates

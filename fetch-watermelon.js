@@ -6,7 +6,8 @@ const registries = [
   { name: 'create-community', url: 'https://registry.watermelon.sh/r/create-community.json' },
   { name: 'dialog-stack', url: 'https://registry.watermelon.sh/r/dialog-stack.json' },
   { name: 'uniswap-dialog', url: 'https://registry.watermelon.sh/r/uniswap-dialog.json' },
-  { name: 'save-toggle-base', url: 'https://registry.watermelon.sh/r/save-toggle-base.json' }
+  { name: 'save-toggle-base', url: 'https://registry.watermelon.sh/r/save-toggle-base.json' },
+  { name: 'family-receive-button-base', url: 'https://registry.watermelon.sh/r/family-receive-button-base.json' }
 ];
 
 const targetDir = path.join(__dirname, 'src', 'renderer', 'components');

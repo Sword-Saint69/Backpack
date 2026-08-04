@@ -287,10 +287,78 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05), inset 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-.form-actions {
+.modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Watermelon UI SaveToggle Button Component Styles */
+.save-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  height: 48px;
+  min-width: 140px;
+  padding: 0 1.5rem;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.save-toggle-btn.primary-toggle {
+  background: #ffffff;
+  color: #09090b;
+}
+.save-toggle-btn.primary-toggle:hover {
+  background: #e4e4e7;
+  transform: translateY(-1px);
+}
+
+.save-toggle-btn.secondary-toggle {
+  background: #18181b;
+  color: #f4f4f5;
+  border: 1px solid #27272a;
+}
+.save-toggle-btn.secondary-toggle:hover {
+  background: #27272a;
+}
+
+.save-toggle-btn.loading {
+  width: 48px !important;
+  min-width: 48px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  pointer-events: none;
+  background: #27272a !important;
+}
+
+.save-toggle-btn.saved {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+
+/* Spinner Icon */
+.save-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Logs Table */
@@ -412,6 +480,38 @@ body {
 }
 input:checked + .slider { background-color: var(--primary); }
 input:checked + .slider:before { transform: translateX(20px); }
+
+/* Watermelon UI Confirmation Card Style */
+.watermelon-confirmation-card {
+  border: 1px solid #27272a;
+  background: #18181b;
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.watermelon-confirmation-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.watermelon-confirmation-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
 
 .modal-header {
   display: flex;
