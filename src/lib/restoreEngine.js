@@ -52,18 +52,33 @@ class RestoreEngine {
 
     let buffer = Buffer.from(res.data.content, 'base64');
 
-    // Decrypt if .enc extension or encrypted envelope
+    // 1. Decrypt if encrypted (.enc or password provided)
     if (path.endsWith('.enc') || encryptionPassword) {
-      buffer = cryptoUtils.decryptPayload(buffer, encryptionPassword);
+      if (!encryptionPassword) {
+        throw new Error('This snapshot is AES encrypted. Please enter the decryption password.');
+      }
+      try {
+        buffer = cryptoUtils.decryptPayload(buffer, encryptionPassword);
+      } catch (err) {
+        throw new Error(`AES Decryption failed: Incorrect decryption password or corrupted payload.`);
+      }
     }
 
-    // Decompress if .gz extension
+    // 2. Decompress if compressed (.gz or .json.gz)
     if (path.endsWith('.gz') || path.endsWith('.gz.enc')) {
-      buffer = zlib.gunzipSync(buffer);
+      try {
+        buffer = zlib.gunzipSync(buffer);
+      } catch (err) {
+        throw new Error(`Gzip Decompression failed: Snapshot payload is corrupted or requires decryption password.`);
+      }
     }
 
-    const jsonStr = buffer.toString('utf-8');
-    return JSON.parse(jsonStr);
+    try {
+      const jsonStr = buffer.toString('utf-8');
+      return JSON.parse(jsonStr);
+    } catch (err) {
+      throw new Error(`Invalid JSON Payload: Failed to parse snapshot file (${err.message}). Verify if AES password or compression settings match.`);
+    }
   }
 
   generateSQLInsertScript(data, dialect = 'postgres') {
