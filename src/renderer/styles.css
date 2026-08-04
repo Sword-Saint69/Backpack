@@ -1,15 +1,18 @@
 :root {
-  --bg-dark: #0f172a;
-  --bg-sidebar: #1e293b;
-  --bg-card: rgba(30, 41, 59, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
+  --bg-dark:    #09090b;          /* zinc-950 — app background */
+  --bg-surface: #111113;          /* zinc-900-ish — subtle elevation */
+  --bg-card:    rgba(24, 24, 27, 0.85); /* zinc-900 glassmorphism */
+  --bg-input:   #18181b;          /* zinc-900 — inputs */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --primary:      #3b82f6;        /* blue-500 */
+  --primary-hover:#2563eb;        /* blue-600 */
+  --success:      #10b981;        /* emerald-500 */
+  --warning:      #f59e0b;        /* amber-500 */
+  --danger:       #ef4444;        /* red-500 */
+  --text-main:    #fafafa;        /* zinc-50 */
+  --text-muted:   #71717a;        /* zinc-500 */
+  --text-sub:     #52525b;        /* zinc-600 */
   --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Fira Code', monospace;
 }
@@ -115,11 +118,11 @@ body {
   gap: 10px;
   padding: 10px 20px 12px;
   border-radius: 22px;
-  border: 1.5px solid rgba(255,255,255,0.12);
-  background: rgba(18, 18, 22, 0.75);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.06) inset;
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(17, 17, 19, 0.82);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05) inset;
   transition: none;
 }
 
@@ -291,11 +294,12 @@ body {
 
 .card {
   background: var(--bg-card);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.04) inset;
 }
 
 .conn-card {
