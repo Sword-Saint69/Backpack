@@ -259,14 +259,15 @@ body {
 .form-group input,
 .form-group select,
 .form-group textarea {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 0.75rem;
-  color: var(--text-main);
+  background: rgba(28, 28, 28, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  color: #ededed;
   font-family: inherit;
   font-size: 0.95rem;
   outline: none;
+  transition: all 0.2s ease;
 }
 
 .form-group textarea {
@@ -277,7 +278,8 @@ body {
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: var(--primary);
+  border-color: rgba(237, 237, 237, 0.6);
+  background: rgba(28, 28, 28, 0.9);
 }
 
 .form-actions {
