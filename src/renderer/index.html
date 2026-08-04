@@ -265,14 +265,14 @@
       </div>
 
       <form id="connectionForm">
-        <input type="hidden" id="connId">
-            <div class="floating-group">
-          <input class="floating-input" type="text" id="connName" placeholder=" " required>
-          <label class="floating-label" for="connName">Connection Name</label>
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label for="connName" style="font-size: 0.85rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem; display: block;">Connection Name</label>
+          <input class="floating-input" type="text" id="connName" placeholder="e.g. Production Postgres DB" required style="padding: 0.75rem 1rem;">
         </div>
 
-        <div class="floating-group">
-          <select class="floating-input" id="connType" required style="padding-top: 0.9rem;">
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label for="connType" style="font-size: 0.85rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem; display: block;">Database Type</label>
+          <select class="floating-input" id="connType" required style="padding: 0.75rem 1rem;">
             <option value="postgres">PostgreSQL / NeonDB</option>
             <option value="mysql">MySQL</option>
             <option value="firebase">Firebase Firestore</option>
@@ -280,20 +280,19 @@
             <option value="mongodb">MongoDB / Atlas</option>
             <option value="supabase">Supabase REST API</option>
           </select>
-          <label class="floating-label" for="connType" style="top:0; font-size:0.72rem; color:var(--text-muted);">Database Type</label>
         </div>
 
-        <div class="floating-group">
-          <textarea class="floating-input floating-textarea" id="connSecret" placeholder=" " rows="3" required></textarea>
-          <label class="floating-label floating-textarea" for="connSecret" id="connSecretLabel">Connection String / Credentials</label>
+        <div class="form-group" style="margin-bottom: 0.5rem;">
+          <label for="connSecret" id="connSecretLabel" style="font-size: 0.85rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem; display: block;">Connection String / Credentials</label>
+          <textarea class="floating-input" id="connSecret" placeholder="postgresql://user:pass@ep-xyz.neon.tech/neondb?sslmode=require" rows="3" required style="padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 0.82rem; min-height: 88px; resize: vertical;"></textarea>
         </div>
-        <div id="connSecretHint" style="font-size: 0.75rem; color: var(--text-muted); margin-top: -0.85rem; margin-bottom: 1.1rem; line-height: 1.4;">
+        <div id="connSecretHint" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.4;">
           <!-- Dynamically updated based on selected DB type -->
         </div>
 
-        <div class="floating-group">
-          <input class="floating-input" type="text" id="selectedTables" placeholder=" ">
-          <label class="floating-label" for="selectedTables">Selective Tables (comma-separated, blank = ALL)</label>
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label for="selectedTables" style="font-size: 0.85rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem; display: block;">Selective Backup Tables (Optional)</label>
+          <input class="floating-input" type="text" id="selectedTables" placeholder="users, orders, products (blank = ALL)" style="padding: 0.75rem 1rem;">
         </div>
 
         <!-- Payload Security Selector -->
@@ -308,9 +307,9 @@
 
         <input type="checkbox" id="chkCompress" style="display: none;">
 
-        <div class="floating-group" id="groupEncPassword" style="display: none;">
-          <input class="floating-input" type="password" id="encryptionPassword" placeholder=" ">
-          <label class="floating-label" for="encryptionPassword">AES Encryption Password</label>
+        <div class="form-group" id="groupEncPassword" style="display: none; margin-bottom: 1.25rem;">
+          <label for="encryptionPassword" style="font-size: 0.85rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem; display: block;">Client-Side AES Encryption Password</label>
+          <input class="floating-input" type="password" id="encryptionPassword" placeholder="Enter password to encrypt JSON payload" style="padding: 0.75rem 1rem;">
         </div>
 
         <!-- Apple Switch for Scheduler Toggle -->
