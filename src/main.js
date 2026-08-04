@@ -42,9 +42,9 @@ function createTray() {
   tray.setToolTip('Backpack — Database Backup Tool');
 
   const contextMenu = Menu.buildFromTemplate([
-    { label: '🎒 Open Backpack', click: () => { if (mainWindow) mainWindow.show(); } },
+    { label: 'Open Backpack', click: () => { if (mainWindow) mainWindow.show(); } },
     {
-      label: '⚡ Backup All Now',
+      label: 'Backup All Connections Now',
       click: async () => {
         const connections = await store.getConnections(false);
         for (const conn of connections) {
