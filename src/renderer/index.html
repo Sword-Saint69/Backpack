@@ -150,15 +150,16 @@
 
       <!-- Settings Tab -->
       <section id="tab-settings" class="tab-page">
-        <header class="page-header">
-          <div>
-            <h2>App Settings & Target</h2>
-            <p>Configure target repository, personal access token (PAT), and startup launch preferences.</p>
-          </div>
-        </header>
+        <div style="max-width: 640px; margin: 0 auto;">
+          <header class="page-header" style="text-align: center; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="text-align: center;">
+              <h2>App Settings &amp; Target</h2>
+              <p style="margin-top: 0.25rem;">Configure target repository, personal access token (PAT), and startup launch preferences.</p>
+            </div>
+          </header>
 
-        <!-- Startup Launch with Apple Switch -->
-        <div class="card form-card" style="margin-bottom: 2rem;">
+          <!-- Startup Launch with Apple Switch -->
+          <div class="card form-card" style="margin-bottom: 2rem; max-width: 100%;">
           <h3 style="margin-bottom: 1rem;">System Launch</h3>
           <div class="apple-switch-wrap">
             <div>
@@ -172,7 +173,7 @@
           </div>
         </div>
 
-        <div class="card form-card">
+          <div class="card form-card" style="max-width: 100%;">
           <h3 style="margin-bottom: 1.25rem;">GitHub Repository Target</h3>
           <form id="githubForm">
             <div class="floating-group">
@@ -197,6 +198,7 @@
             </div>
           </form>
         </div>
+      </div>
       </section>
     </main>
   </div>
