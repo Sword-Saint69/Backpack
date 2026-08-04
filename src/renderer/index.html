@@ -73,29 +73,40 @@
         <header class="page-header">
           <div>
             <h2>Restore Wizard</h2>
-            <p>Browse backup commit snapshots, decrypt payloads, and generate SQL replay scripts.</p>
+            <p>Inspect GitHub commit snapshots, decrypt payload contents, and generate point-in-time SQL replay scripts.</p>
           </div>
         </header>
 
+        <!-- Restore Step 1: Select Connection & Target -->
         <div class="card form-card" style="margin-bottom: 1.5rem;">
-          <div class="form-group">
-            <label for="restoreSelectConn">Select Connection</label>
-            <select id="restoreSelectConn">
+          <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
+            Select Connection Target
+          </h3>
+          <div class="floating-group">
+            <select class="floating-input" id="restoreSelectConn" required style="padding-top: 0.9rem;">
               <!-- Options populated dynamically -->
             </select>
+            <label class="floating-label" for="restoreSelectConn" style="top:0; font-size:0.72rem; color:var(--text-muted);">Database Connection</label>
           </div>
-          <button class="btn primary" id="btnFetchSnapshots">Fetch Snapshots from GitHub</button>
+          <button class="btn primary" id="btnFetchSnapshots" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="ph-bold ph-cloud-arrow-down"></i> Fetch Snapshots from GitHub
+          </button>
         </div>
 
-        <div id="snapshotResultsContainer" style="display: none;">
-          <h3 style="margin-bottom: 1rem;">Available Snapshots</h3>
-          <div class="table-container" style="margin-bottom: 1.5rem;">
+        <!-- Restore Step 2: Browse Snapshots -->
+        <div id="snapshotResultsContainer" style="display: none;" class="card" style="margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+            Available Point-in-Time Snapshots
+          </h3>
+          <div class="table-container" style="background: rgba(0,0,0,0.25); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06);">
             <table class="logs-table">
               <thead>
                 <tr>
-                  <th>Snapshot File</th>
-                  <th>Size</th>
-                  <th>Actions</th>
+                  <th>Snapshot File / Key</th>
+                  <th>Payload Size</th>
+                  <th style="text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody id="snapshotsTableBody">
@@ -376,6 +387,45 @@
         <span class="dock-dot"></span>
         <span class="dock-tooltip">GitHub target & preferences</span>
       </button>
+    </div>
+  </div>
+
+  <!-- Restore SQL Options Modal -->
+  <div class="modal-overlay" id="restoreModal">
+    <div class="modal-content card watermelon-modal" style="max-width: 520px !important;">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 600;">⚡ Generate SQL Replay Script</h3>
+          <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.25rem;">
+            Decrypt payload and compile full DDL/DML replay script for target database.
+          </p>
+        </div>
+        <button class="close-btn" id="btnCloseRestoreModal">&times;</button>
+      </div>
+
+      <form id="restoreSQLForm">
+        <input type="hidden" id="restoreSelectedPath">
+        
+        <div class="floating-group">
+          <select class="floating-input" id="restoreDialect" style="padding-top: 0.9rem;">
+            <option value="postgres">PostgreSQL (INSERT ... ON CONFLICT DO UPDATE)</option>
+            <option value="mysql">MySQL (INSERT INTO ... ON DUPLICATE KEY UPDATE)</option>
+          </select>
+          <label class="floating-label" for="restoreDialect" style="top:0; font-size:0.72rem; color:var(--text-muted);">Target SQL Dialect</label>
+        </div>
+
+        <div class="floating-group">
+          <input class="floating-input" type="password" id="restoreDecryptionPassword" placeholder=" ">
+          <label class="floating-label" for="restoreDecryptionPassword">AES Decryption Password (leave blank if unencrypted)</label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn secondary" id="btnCancelRestoreModal">Cancel</button>
+          <button type="submit" class="btn primary" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+            <i class="ph-bold ph-download-simple"></i> Compile &amp; Download SQL
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 

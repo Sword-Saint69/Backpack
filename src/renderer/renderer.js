@@ -616,24 +616,45 @@ document.getElementById('btnFetchSnapshots').addEventListener('click', async () 
     snapshots.forEach(s => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><code>${s.name}</code></td>
-        <td>${s.sizeMB} MB</td>
-        <td>
-          <button class="btn primary" onclick="generateRestoreSQL('${s.path}')">Generate SQL Replay</button>
+        <td><code style="background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 6px; font-size: 0.82rem; color: #60a5fa;">${s.name}</code></td>
+        <td><span style="font-weight: 500; color: var(--text-main);">${s.sizeMB} MB</span></td>
+        <td style="text-align: right;">
+          <button class="btn primary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;" onclick="openRestoreModal('${s.path}')">
+            <i class="ph-bold ph-code"></i> Generate SQL Replay
+          </button>
         </td>
       `;
       tbody.appendChild(tr);
     });
+    showNotification('Snapshots Loaded', `Found ${snapshots.length} point-in-time snapshot(s)`, 'success');
   } catch (err) {
-    alert(`Failed fetching snapshots: ${err.message}`);
+    showNotification('Fetch Snapshots Failed', err.message, 'error');
   }
 });
 
-async function generateRestoreSQL(path) {
-  const password = prompt('Enter AES payload decryption password (leave blank if unencrypted):') || '';
-  const dialect = prompt('Select SQL dialect (postgres or mysql):', 'postgres') || 'postgres';
+// Restore Modal Wire-up
+function openRestoreModal(path) {
+  document.getElementById('restoreSelectedPath').value = path;
+  document.getElementById('restoreDecryptionPassword').value = '';
+  document.getElementById('restoreModal').classList.add('active');
+}
+
+document.getElementById('btnCloseRestoreModal')?.addEventListener('click', () => {
+  document.getElementById('restoreModal').classList.remove('active');
+});
+
+document.getElementById('btnCancelRestoreModal')?.addEventListener('click', () => {
+  document.getElementById('restoreModal').classList.remove('active');
+});
+
+document.getElementById('restoreSQLForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const path = document.getElementById('restoreSelectedPath').value;
+  const dialect = document.getElementById('restoreDialect').value || 'postgres';
+  const password = document.getElementById('restoreDecryptionPassword').value || '';
 
   try {
+    showNotification('Generating SQL...', 'Decrypting snapshot and building DDL/DML script', 'info');
     const sql = await window.api.generateRestoreSQL(path, dialect, password);
     const blob = new Blob([sql], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -641,11 +662,12 @@ async function generateRestoreSQL(path) {
     a.href = url;
     a.download = `restore-${Date.now()}.sql`;
     a.click();
-    alert('SQL Replay script generated and downloaded successfully!');
+    document.getElementById('restoreModal').classList.remove('active');
+    showNotification('SQL Replay Downloaded', 'Restore script saved to downloads', 'success');
   } catch (err) {
-    alert(`Failed generating restore SQL: ${err.message}`);
+    showNotification('SQL Generation Failed', err.message, 'error');
   }
-}
+});
 
 async function loadLogs() {
   const tbody = document.getElementById('logsTableBody');
