@@ -550,9 +550,23 @@ async function loadConnections() {
 }
 
 async function dryRun(id) {
+  showNotification('Inspecting Database...', 'Querying table metrics and row counts for preview', 'info', 2500);
+
+  const card = document.querySelector(`[data-card-id="${id}"]`);
+  const statusEl = card?.querySelector('.conn-status');
+  if (statusEl) {
+    statusEl.textContent = '⏳ Inspecting...';
+    statusEl.style.color = '#f59e0b';
+  }
+
   try {
     const result = await window.api.dryRunBackup(id);
     
+    if (statusEl) {
+      statusEl.textContent = 'Ready';
+      statusEl.style.color = 'var(--success)';
+    }
+
     document.getElementById('dryRunModalTitle').textContent = `🔍 Dry-Run Preview — ${result.connectionName}`;
     document.getElementById('dryRunDbType').textContent = result.type;
     document.getElementById('dryRunTotalRows').textContent = `${result.totalRows} rows`;
@@ -608,6 +622,10 @@ async function dryRun(id) {
 
     document.getElementById('dryRunModal').classList.add('active');
   } catch (err) {
+    if (statusEl) {
+      statusEl.textContent = 'Ready';
+      statusEl.style.color = 'var(--success)';
+    }
     showNotification('Dry-run Failed', err.message, 'error');
   }
 }
