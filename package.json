@@ -1,10 +1,12 @@
 {
     "name":  "backpack",
-    "version":  "1.2.0",
+    "version":  "1.2.1",
     "description":  "",
     "main":  "src/main.js",
     "scripts":  {
                     "start":  "electron .",
+                    "dev":  "electron .",
+                    "electron":  "electron .",
                     "test":  "echo \"Error: no test specified\" \u0026\u0026 exit 1"
                 },
     "keywords":  [
