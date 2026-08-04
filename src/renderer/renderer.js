@@ -398,6 +398,19 @@ document.getElementById('btnFetchSnapshots').addEventListener('click', async () 
   const connName = document.getElementById('restoreSelectConn').value;
   if (!connName) return alert('Select a connection first');
 
+  // Guard: require GitHub to be configured before fetching
+  try {
+    const config = await window.api.getGitHubConfig();
+    if (!config.ownerRepo || !config.hasToken) {
+      alert('⚠️ GitHub repository and access token must be configured in Settings before fetching snapshots.');
+      document.querySelector('.nav-btn[data-tab="settings"]')?.click();
+      return;
+    }
+  } catch (e) {
+    alert('Unable to check GitHub configuration. Please verify Settings.');
+    return;
+  }
+
   try {
     const snapshots = await window.api.getSnapshotHistory(connName);
     const tbody = document.getElementById('snapshotsTableBody');
