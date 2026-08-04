@@ -13,6 +13,9 @@ class GitHubUploader {
   }
 
   async testConnection() {
+    if (!this.owner || !this.repo) {
+      throw new Error(`Invalid GitHub repository format "${this.owner}${this.repo ? '/' + this.repo : ''}". Expected "owner/repository-name" (e.g. Sword-Saint69/Backpack)`);
+    }
     try {
       const res = await this.octokit.rest.repos.get({
         owner: this.owner,
