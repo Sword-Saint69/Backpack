@@ -9,6 +9,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
     rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 </head>
 
 <body>
@@ -16,7 +17,7 @@
     <!-- Top Brand Bar -->
     <header class="app-topbar">
       <div class="brand">
-        <div class="logo-icon">🎒</div>
+        <div class="logo-icon"><i class="ph-bold ph-backpack" style="font-size:1.5rem;"></i></div>
         <div class="brand-text">
           <h1>Backpack</h1>
           <span class="version">v1.2 Automation</span>
@@ -37,7 +38,7 @@
         <div id="githubWarningBanner" class="card" style="display: none; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
           <div style="display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span style="font-size: 1.25rem;">⚠️</span>
+              <i class="ph-bold ph-warning" style="font-size: 1.35rem; color: #f59e0b;"></i>
               <div>
                 <strong style="color: #f59e0b; font-size: 0.95rem;">GitHub target not configured</strong>
                 <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.15rem;">Backups cannot be pushed to storage until repository and access token settings are saved.</p>
@@ -341,21 +342,21 @@
   <div class="dock-wrapper" id="dockWrapper">
     <div class="dock-panel" id="dockPanel">
       <button class="dock-item active" data-tab="connections" aria-label="Connections">
-        <div class="dock-icon">🔌</div>
+        <div class="dock-icon"><i class="ph-bold ph-plugs-connected"></i></div>
         <span class="dock-label">Connections</span>
       </button>
       <button class="dock-item" data-tab="logs" aria-label="Audit Logs">
-        <div class="dock-icon">📜</div>
+        <div class="dock-icon"><i class="ph-bold ph-clipboard-text"></i></div>
         <span class="dock-label">Audit Logs</span>
       </button>
       <div class="dock-separator"></div>
       <button class="dock-item" data-tab="restore" aria-label="Restore Wizard (v1.5 Preview)">
-        <div class="dock-icon">🔄</div>
+        <div class="dock-icon"><i class="ph-bold ph-arrow-counter-clockwise"></i></div>
         <span class="dock-label">Restore Wizard · v1.5</span>
       </button>
       <div class="dock-separator"></div>
       <button class="dock-item" data-tab="settings" aria-label="Settings">
-        <div class="dock-icon">⚙️</div>
+        <div class="dock-icon"><i class="ph-bold ph-gear-six"></i></div>
         <span class="dock-label">Settings</span>
       </button>
     </div>

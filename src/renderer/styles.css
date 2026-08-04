@@ -138,32 +138,42 @@ body {
 }
 
 .dock-icon {
-  width: 50px;
-  height: 50px;
+  width: calc(50px * var(--dock-scale, 1));
+  height: calc(50px * var(--dock-scale, 1));
   border-radius: 14px;
-  background: rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.06);
   border: 1.5px solid rgba(255,255,255,0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.55rem;
   transition: width 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
               height 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
-              font-size 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 0.2s ease,
               background 0.2s ease;
   will-change: width, height;
 }
 
+.dock-icon i {
+  font-size: calc(1.45rem * var(--dock-scale, 1));
+  color: #a1a1aa;
+  transition: color 0.2s ease, font-size 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
 .dock-item:hover .dock-icon,
 .dock-item.active .dock-icon {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: rgba(59, 130, 246, 0.45);
-  box-shadow: 0 0 18px rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.18);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+}
+
+.dock-item:hover .dock-icon i,
+.dock-item.active .dock-icon i {
+  color: #60a5fa;
 }
 
 .dock-item.active .dock-icon {
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.25);
 }
 
 /* Active dot indicator */
@@ -215,11 +225,7 @@ body {
 }
 
 /* Neighbour magnification — set via JS inline style --dock-scale */
-.dock-icon {
-  width: calc(50px * var(--dock-scale, 1));
-  height: calc(50px * var(--dock-scale, 1));
-  font-size: calc(1.55rem * var(--dock-scale, 1));
-}
+/* (width, height, i font-size all scale via calc on --dock-scale) */
 
 /* Main Content */
 .content {
