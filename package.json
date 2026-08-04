@@ -1,6 +1,6 @@
 {
     "name":  "backpack",
-    "version":  "1.0.6",
+    "version":  "1.0.7",
     "description":  "",
     "main":  "src/main.js",
     "scripts":  {
@@ -19,6 +19,7 @@
                          "electron-store":  "^11.0.2",
                          "firebase-admin":  "^14.2.0",
                          "mysql2":  "^3.23.2",
+                         "node-cron":  "^4.6.0",
                          "pg":  "^8.22.0"
                      }
 }
