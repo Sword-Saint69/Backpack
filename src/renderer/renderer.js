@@ -44,6 +44,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     modal.classList.remove('active');
   });
 
+  // Watermelon UI Tab Selector Logic
+  const btnTabNormal = document.getElementById('btnTabNormal');
+  const btnTabGzip = document.getElementById('btnTabGzip');
+  const btnTabEncrypt = document.getElementById('btnTabEncrypt');
+  const chkCompress = document.getElementById('chkCompress');
+  const groupEncPassword = document.getElementById('groupEncPassword');
+
+  function setSecurityMode(mode) {
+    [btnTabNormal, btnTabGzip, btnTabEncrypt].forEach(b => b?.classList.remove('active'));
+    if (mode === 'normal') {
+      btnTabNormal?.classList.add('active');
+      if (chkCompress) chkCompress.checked = false;
+      if (groupEncPassword) groupEncPassword.style.display = 'none';
+    } else if (mode === 'gzip') {
+      btnTabGzip?.classList.add('active');
+      if (chkCompress) chkCompress.checked = true;
+      if (groupEncPassword) groupEncPassword.style.display = 'none';
+    } else if (mode === 'encrypt') {
+      btnTabEncrypt?.classList.add('active');
+      if (chkCompress) chkCompress.checked = true;
+      if (groupEncPassword) groupEncPassword.style.display = 'flex';
+    }
+  }
+
+  btnTabNormal?.addEventListener('click', () => setSecurityMode('normal'));
+  btnTabGzip?.addEventListener('click', () => setSecurityMode('gzip'));
+  btnTabEncrypt?.addEventListener('click', () => setSecurityMode('encrypt'));
+
+  // Watermelon UI Switch Toggle for Scheduler
+  const schedEnabledSwitch = document.getElementById('schedEnabled');
+  const groupSchedulerFields = document.getElementById('groupSchedulerFields');
+
+  schedEnabledSwitch?.addEventListener('change', (e) => {
+    if (groupSchedulerFields) {
+      groupSchedulerFields.style.display = e.target.checked ? 'flex' : 'none';
+    }
+  });
+
   // Load Data
   await loadGitHubConfig();
   await loadConnections();

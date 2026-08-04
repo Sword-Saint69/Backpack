@@ -218,19 +218,25 @@
     </main>
   </div>
 
-  <!-- Connection Modal -->
+  <!-- Connection Modal (Watermelon UI Styled Create Community Dialog) -->
   <div class="modal-overlay" id="connectionModal">
-    <div class="modal-content card">
+    <div class="modal-content card watermelon-modal">
       <div class="modal-header">
-        <h3 id="modalTitle">Add Connection</h3>
+        <div>
+          <h3 id="modalTitle" style="font-size: 1.35rem; font-weight: 600;">Add Database Connection</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">
+            Configure your target database credentials and choose automatic backup scheduling options.
+          </p>
+        </div>
         <button class="close-btn" id="btnCloseModal">&times;</button>
       </div>
 
       <form id="connectionForm">
         <input type="hidden" id="connId">
+        
         <div class="form-group">
           <label for="connName">Connection Name</label>
-          <input type="text" id="connName" placeholder="e.g. Production Postgres" required>
+          <input type="text" id="connName" placeholder="e.g. Production Postgres DB" required>
         </div>
 
         <div class="form-group">
@@ -246,38 +252,46 @@
         </div>
 
         <div class="form-group">
-          <label for="connSecret" id="connSecretLabel">Connection String / Service Account JSON</label>
-          <textarea id="connSecret" rows="3"
-            placeholder="postgresql://user:pass@ep-xyz.neon.tech/neondb?sslmode=require"></textarea>
+          <label for="connSecret" id="connSecretLabel">Connection Credentials / Connection String</label>
+          <textarea id="connSecret" rows="3" placeholder="postgresql://user:pass@ep-xyz.neon.tech/neondb?sslmode=require"></textarea>
         </div>
 
         <div class="form-group">
           <label for="selectedTables">Selective Backup Tables / Collections (Optional)</label>
-          <input type="text" id="selectedTables"
-            placeholder="users, orders, products (Comma-separated, leave blank for ALL)">
+          <input type="text" id="selectedTables" placeholder="users, orders, products (Comma-separated, leave blank for ALL)">
         </div>
 
-        <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">
-          <input type="checkbox" id="chkCompress" style="width: 16px; height: 16px;">
-          <label for="chkCompress" style="margin: 0; color: var(--text-main);">Compress Payload with Gzip
-            (.json.gz)</label>
-        </div>
-
+        <!-- Watermelon UI Pricing / Compression Selector -->
         <div class="form-group">
-          <label for="encryptionPassword">Client-Side AES Encryption Password (Optional)</label>
-          <input type="password" id="encryptionPassword"
-            placeholder="Password to encrypt JSON payload at rest on GitHub">
+          <label>Payload Security & Compression</label>
+          <div class="watermelon-tab-group">
+            <button type="button" class="watermelon-tab-btn active" id="btnTabNormal">Standard JSON</button>
+            <button type="button" class="watermelon-tab-btn" id="btnTabGzip">Gzip Compressed</button>
+            <button type="button" class="watermelon-tab-btn" id="btnTabEncrypt">AES Encrypted</button>
+          </div>
         </div>
 
-        <h4 style="margin: 1rem 0 0.5rem 0; font-size: 0.9rem; color: var(--text-main);">Automatic Backup Schedule</h4>
+        <input type="checkbox" id="chkCompress" style="display: none;">
 
-        <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">
-          <input type="checkbox" id="schedEnabled" style="width: 16px; height: 16px;">
-          <label for="schedEnabled" style="margin: 0; color: var(--text-main);">Enable Cron Schedule</label>
+        <div class="form-group" id="groupEncPassword" style="display: none;">
+          <label for="encryptionPassword">Client-Side AES Encryption Password</label>
+          <input type="password" id="encryptionPassword" placeholder="Password to encrypt JSON payload at rest on GitHub">
         </div>
 
-        <div class="form-group">
-          <label for="schedPreset">Preset</label>
+        <!-- Watermelon UI Style Toggle Switch for Scheduler -->
+        <div class="watermelon-toggle-card">
+          <div>
+            <span style="font-weight: 500; font-size: 0.95rem;">Enable Automatic Cron Schedule</span>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Automate unattended backups in the background.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="schedEnabled">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="form-group" id="groupSchedulerFields" style="display: none; margin-top: 1rem;">
+          <label for="schedPreset">Schedule Preset</label>
           <select id="schedPreset">
             <option value="hourly">Hourly (at minute 0)</option>
             <option value="daily">Daily (at midnight)</option>
@@ -291,9 +305,9 @@
           <input type="text" id="schedCustom" placeholder="0 */6 * * * (Every 6 hours)">
         </div>
 
-        <div class="modal-actions">
+        <div class="modal-actions" style="margin-top: 1.5rem;">
           <button type="button" class="btn secondary" id="btnTestConn">Test Connection</button>
-          <button type="submit" class="btn primary">Save Connection</button>
+          <button type="submit" class="btn primary" style="padding: 0.7rem 1.5rem; font-weight: 600;">Save Connection</button>
         </div>
       </form>
     </div>
