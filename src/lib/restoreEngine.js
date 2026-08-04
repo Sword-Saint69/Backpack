@@ -50,7 +50,12 @@ class RestoreEngine {
       ref: uploader.branch
     });
 
-    let buffer = Buffer.from(res.data.content, 'base64');
+    let base64Data = res.data.content || '';
+    if (base64Data) {
+      base64Data = base64Data.replace(/\s/g, '');
+    }
+
+    let buffer = Buffer.from(base64Data, 'base64');
 
     // 1. Decrypt if encrypted (.enc extension or decryption password provided)
     if (path.endsWith('.enc') || encryptionPassword) {
