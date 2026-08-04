@@ -13,37 +13,21 @@
 
 <body>
   <div class="app-container">
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
+    <!-- Top Brand Bar -->
+    <header class="app-topbar">
       <div class="brand">
         <div class="logo-icon">🎒</div>
         <div class="brand-text">
           <h1>Backpack</h1>
-          <span class="version">v1.1 Automation</span>
+          <span class="version">v1.2 Automation</span>
         </div>
       </div>
-
-      <nav class="nav-menu">
-        <button class="nav-btn active" data-tab="connections">
-          <span class="icon">🔌</span> Connections
-        </button>
-        <button class="nav-btn" data-tab="logs">
-          <span class="icon">📜</span> Audit Logs
-        </button>
-        <button class="nav-btn" data-tab="restore">
-          <span class="icon">🔄</span> Restore Wizard <span class="badge-soon" style="font-size: 0.65rem; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 10px; margin-left: auto;">v1.5</span>
-        </button>
-        <button class="nav-btn" data-tab="settings">
-          <span class="icon">⚙️</span> Settings
-        </button>
-      </nav>
-
       <div class="status-box" id="githubStatusSummary">
         <span class="status-indicator warning"></span>
-        <span class="status-text">GitHub target unconfigured</span>
-        <button id="btnSidebarConfigure" style="margin-left: auto; font-size: 0.75rem; background: transparent; border: none; color: var(--primary); cursor: pointer; text-decoration: underline;">Configure</button>
+        <span class="status-text">GitHub unconfigured</span>
+        <button id="btnSidebarConfigure" style="margin-left: 0.5rem; font-size: 0.75rem; background: transparent; border: none; color: var(--primary); cursor: pointer; text-decoration: underline; padding: 0;">Configure</button>
       </div>
-    </aside>
+    </header>
 
     <!-- Main Content Area -->
     <main class="content">
@@ -350,6 +334,30 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Floating Bottom Dock (Lightswind Dock equivalent) -->
+  <div class="dock-wrapper" id="dockWrapper">
+    <div class="dock-panel" id="dockPanel">
+      <button class="dock-item active" data-tab="connections" aria-label="Connections">
+        <div class="dock-icon">🔌</div>
+        <span class="dock-label">Connections</span>
+      </button>
+      <button class="dock-item" data-tab="logs" aria-label="Audit Logs">
+        <div class="dock-icon">📜</div>
+        <span class="dock-label">Audit Logs</span>
+      </button>
+      <div class="dock-separator"></div>
+      <button class="dock-item" data-tab="restore" aria-label="Restore Wizard (v1.5 Preview)">
+        <div class="dock-icon">🔄</div>
+        <span class="dock-label">Restore Wizard · v1.5</span>
+      </button>
+      <div class="dock-separator"></div>
+      <button class="dock-item" data-tab="settings" aria-label="Settings">
+        <div class="dock-icon">⚙️</div>
+        <span class="dock-label">Settings</span>
+      </button>
     </div>
   </div>
 

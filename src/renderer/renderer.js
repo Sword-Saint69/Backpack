@@ -1,17 +1,45 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  // Navigation Tabs
-  const navBtns = document.querySelectorAll('.nav-btn');
-  const tabPages = document.querySelectorAll('.tab-page');
+  // ── Dock Navigation ──
+  const dockItems = document.querySelectorAll('.dock-item[data-tab]');
+  const tabPages  = document.querySelectorAll('.tab-page');
+  const dockPanel = document.getElementById('dockPanel');
 
-  navBtns.forEach(btn => {
+  // Magnification constants (matching Dock.tsx defaults)
+  const BASE_SIZE    = 50;
+  const MAX_SIZE     = 72;
+  const DISTANCE     = 130;
+
+  function applyMagnification(mouseX) {
+    dockItems.forEach(item => {
+      const icon = item.querySelector('.dock-icon');
+      if (!icon) return;
+      const rect = icon.getBoundingClientRect();
+      const center = rect.left + rect.width / 2;
+      const dist = Math.abs(mouseX - center);
+      let scale = 1;
+      if (dist < DISTANCE) {
+        // Cosine falloff
+        scale = 1 + (MAX_SIZE / BASE_SIZE - 1) * Math.cos((dist / DISTANCE) * (Math.PI / 2));
+      }
+      icon.style.setProperty('--dock-scale', scale.toFixed(3));
+    });
+  }
+
+  dockPanel?.addEventListener('mousemove', (e) => applyMagnification(e.clientX));
+  dockPanel?.addEventListener('mouseleave', () => {
+    dockItems.forEach(item => {
+      item.querySelector('.dock-icon')?.style.setProperty('--dock-scale', '1');
+    });
+  });
+
+  // Tab switching
+  dockItems.forEach(btn => {
     btn.addEventListener('click', () => {
       const targetTab = btn.getAttribute('data-tab');
-      navBtns.forEach(b => b.classList.remove('active'));
+      dockItems.forEach(b => b.classList.remove('active'));
       tabPages.forEach(p => p.classList.remove('active'));
-
       btn.classList.add('active');
-      document.getElementById(`tab-${targetTab}`).classList.add('active');
-
+      document.getElementById(`tab-${targetTab}`)?.classList.add('active');
       if (targetTab === 'logs') loadLogs();
       if (targetTab === 'restore') loadRestoreConnections();
     });
@@ -19,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Refresh Logs Button
   document.getElementById('btnRefreshLogs')?.addEventListener('click', () => loadLogs());
+
   const modal = document.getElementById('connectionModal');
   const btnOpenAdd = document.getElementById('btnOpenAddModal');
   const btnCloseModal = document.getElementById('btnCloseModal');
@@ -78,9 +107,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnBannerConfigure')?.addEventListener('click', () => switchToTab('settings'));
 
   function switchToTab(tabName) {
-    navBtns.forEach(b => b.classList.remove('active'));
+    dockItems.forEach(b => b.classList.remove('active'));
     tabPages.forEach(p => p.classList.remove('active'));
-    const btn = document.querySelector(`.nav-btn[data-tab="${tabName}"]`);
+    const btn = document.querySelector(`.dock-item[data-tab="${tabName}"]`);
     if (btn) btn.classList.add('active');
     document.getElementById(`tab-${tabName}`)?.classList.add('active');
     if (tabName === 'logs') loadLogs();
