@@ -27,14 +27,11 @@
         <button class="nav-btn active" data-tab="connections">
           <span class="icon">🔌</span> Connections
         </button>
-        <button class="nav-btn" data-tab="restore">
-          <span class="icon">🔄</span> Restore Wizard
-        </button>
-        <button class="nav-btn" data-tab="community">
-          <span class="icon">🍉</span> Watermelon UI
-        </button>
         <button class="nav-btn" data-tab="logs">
           <span class="icon">📜</span> Audit Logs
+        </button>
+        <button class="nav-btn" data-tab="restore">
+          <span class="icon">🔄</span> Restore Wizard <span class="badge-soon" style="font-size: 0.65rem; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 10px; margin-left: auto;">v1.5</span>
         </button>
         <button class="nav-btn" data-tab="settings">
           <span class="icon">⚙️</span> Settings
@@ -44,6 +41,7 @@
       <div class="status-box" id="githubStatusSummary">
         <span class="status-indicator warning"></span>
         <span class="status-text">GitHub target unconfigured</span>
+        <button id="btnSidebarConfigure" style="margin-left: auto; font-size: 0.75rem; background: transparent; border: none; color: var(--primary); cursor: pointer; text-decoration: underline;">Configure</button>
       </div>
     </aside>
 
@@ -51,6 +49,20 @@
     <main class="content">
       <!-- Connections Tab -->
       <section id="tab-connections" class="tab-page active">
+        <!-- Persistent Warning Banner when GitHub Target is Unconfigured -->
+        <div id="githubWarningBanner" class="card" style="display: none; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 1.25rem;">⚠️</span>
+              <div>
+                <strong style="color: #f59e0b; font-size: 0.95rem;">GitHub target not configured</strong>
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.15rem;">Backups cannot be pushed to storage until repository and access token settings are saved.</p>
+              </div>
+            </div>
+            <button class="btn primary" id="btnBannerConfigure" style="background: #f59e0b; color: #000; font-weight: 600;">Configure Now</button>
+          </div>
+        </div>
+
         <header class="page-header">
           <div>
             <h2>Database Connections</h2>
@@ -218,7 +230,55 @@
     </main>
   </div>
 
-  <!-- Connection Modal (Watermelon UI Styled Create Community Dialog) -->
+  <!-- Custom Dry-Run Preview Modal -->
+  <div class="modal-overlay" id="dryRunModal">
+    <div class="modal-content card watermelon-modal" style="max-width: 680px !important;">
+      <div class="modal-header">
+        <div>
+          <h3 id="dryRunModalTitle" style="font-size: 1.35rem; font-weight: 600;">🔍 Dry-Run Preview</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">Inspect table document counts and estimated payload size before pushing to GitHub.</p>
+        </div>
+        <button class="close-btn" id="btnCloseDryRunModal">&times;</button>
+      </div>
+
+      <div class="dry-run-summary-box" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); padding: 1rem; border-radius: 16px; margin-bottom: 1.25rem;">
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Database Type</span>
+          <p id="dryRunDbType" style="font-size: 0.95rem; font-weight: 600; text-transform: uppercase; color: var(--primary); margin-top: 0.15rem;">-</p>
+        </div>
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Total Rows / Docs</span>
+          <p id="dryRunTotalRows" style="font-size: 0.95rem; font-weight: 600; color: #f4f4f5; margin-top: 0.15rem;">-</p>
+        </div>
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Est. Payload Size</span>
+          <p id="dryRunPayloadSize" style="font-size: 0.95rem; font-weight: 600; color: #10b981; margin-top: 0.15rem;">-</p>
+        </div>
+      </div>
+
+      <h4 style="font-size: 0.9rem; font-weight: 600; color: #f4f4f5; margin-bottom: 0.5rem;">Table Breakdown (Sorted Descending)</h4>
+      <div class="table-container" style="max-height: 240px; overflow-y: auto; background: rgba(18, 18, 22, 0.8); border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 1.5rem;">
+        <table class="logs-table">
+          <thead>
+            <tr>
+              <th style="padding: 0.75rem 1rem;">Table / Collection</th>
+              <th style="padding: 0.75rem 1rem; text-align: right;">Document / Row Count</th>
+            </tr>
+          </thead>
+          <tbody id="dryRunTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="save-toggle-btn secondary-toggle" id="btnCloseDryRun">Cancel</button>
+        <button type="button" class="save-toggle-btn primary-toggle" id="btnRunBackupFromDryRun">
+          <span class="btn-text">Run Backup Now</span>
+        </button>
+      </div>
+    </div>
+  </div>
   <div class="modal-overlay" id="connectionModal">
     <div class="modal-content card watermelon-modal">
       <div class="modal-header">

@@ -82,6 +82,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Persistent GitHub Warning Banner Buttons
+  document.getElementById('btnSidebarConfigure')?.addEventListener('click', () => switchToTab('settings'));
+  document.getElementById('btnBannerConfigure')?.addEventListener('click', () => switchToTab('settings'));
+
+  function switchToTab(tabName) {
+    navBtns.forEach(b => b.classList.remove('active'));
+    tabPages.forEach(p => p.classList.remove('active'));
+    const btn = document.querySelector(`.nav-btn[data-tab="${tabName}"]`);
+    if (btn) btn.classList.add('active');
+    document.getElementById(`tab-${tabName}`)?.classList.add('active');
+    if (tabName === 'logs') loadLogs();
+    if (tabName === 'restore') loadRestoreConnections();
+  }
+
+  // Dry Run Modal Wire
+  const dryRunModal = document.getElementById('dryRunModal');
+  const btnCloseDryRunModal = document.getElementById('btnCloseDryRunModal');
+  const btnCloseDryRun = document.getElementById('btnCloseDryRun');
+
+  [btnCloseDryRunModal, btnCloseDryRun].forEach(btn => {
+    btn?.addEventListener('click', () => dryRunModal.classList.remove('active'));
+  });
+
   // Load Data
   await loadGitHubConfig();
   await loadConnections();
@@ -191,6 +214,8 @@ async function loadGitHubConfig() {
   try {
     const config = await window.api.getGitHubConfig();
     const statusBox = document.getElementById('githubStatusSummary');
+    const warningBanner = document.getElementById('githubWarningBanner');
+
     if (config.ownerRepo && config.hasToken) {
       document.getElementById('ghRepo').value = config.ownerRepo;
       document.getElementById('ghBranch').value = config.branch || 'main';
@@ -198,11 +223,14 @@ async function loadGitHubConfig() {
         <span class="status-indicator success"></span>
         <span class="status-text">Target: ${config.ownerRepo}</span>
       `;
+      if (warningBanner) warningBanner.style.display = 'none';
     } else {
       statusBox.innerHTML = `
         <span class="status-indicator warning"></span>
-        <span class="status-text">GitHub target unconfigured</span>
+        <span class="status-text">GitHub unconfigured</span>
+        <button id="btnSidebarConfigure" onclick="document.querySelector('[data-tab=settings]').click()" style="margin-left: auto; font-size: 0.75rem; background: transparent; border: none; color: var(--primary); cursor: pointer; text-decoration: underline;">Configure</button>
       `;
+      if (warningBanner) warningBanner.style.display = 'block';
     }
   } catch (e) {
     console.error(e);
@@ -213,9 +241,17 @@ async function loadConnections() {
   const grid = document.getElementById('connectionsGrid');
   grid.innerHTML = '';
   const connections = await window.api.getConnections();
+  const logs = await window.api.getLogs();
 
   if (connections.length === 0) {
-    grid.innerHTML = `<p style="color: var(--text-muted);">No database connections yet. Click "+ Add Connection" to get started.</p>`;
+    grid.innerHTML = `
+      <div class="card" style="border: 2px dashed rgba(255,255,255,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; text-align: center; grid-column: 1 / -1;">
+        <span style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔌</span>
+        <h3>No Database Connections Yet</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0 1.25rem 0; max-width: 400px;">Add your database credentials to schedule automatic point-in-time backups to GitHub.</p>
+        <button class="btn primary" onclick="document.getElementById('btnOpenAddModal').click()">+ Add First Connection</button>
+      </div>
+    `;
     return;
   }
 
@@ -224,20 +260,31 @@ async function loadConnections() {
     card.className = 'card conn-card';
     card.setAttribute('data-card-id', conn.id);
 
+    // Find last run log for metadata line
+    const connLogs = logs.filter(l => l.connectionId === conn.id || l.connectionName === conn.name);
+    const lastLog = connLogs.length > 0 ? connLogs[0] : null;
+    const lastRunText = lastLog ? `${new Date(lastLog.timestamp).toLocaleTimeString()} (${lastLog.status})` : 'Never';
+
+    const schedText = conn.schedule && conn.schedule.enabled ? `Enabled (${conn.schedule.preset})` : 'Disabled';
+
     card.innerHTML = `
       <div>
         <div class="conn-header">
           <h3>${conn.name}</h3>
           <span class="badge ${conn.type}">${conn.type}</span>
         </div>
-        <p class="conn-status" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Ready</p>
+        <div class="conn-meta" style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.25rem;">
+          <div><strong style="color: #a1a1aa;">Status:</strong> <span class="conn-status" style="color: var(--success);">Ready</span></div>
+          <div><strong style="color: #a1a1aa;">Last Run:</strong> <span>${lastRunText}</span></div>
+          <div><strong style="color: #a1a1aa;">Schedule:</strong> <span>${schedText}</span></div>
+        </div>
       </div>
 
-      <div class="conn-actions">
+      <div class="conn-actions" style="margin-top: 1.25rem;">
         <button class="btn primary btn-backup" onclick="runBackup('${conn.id}')">Backup Now</button>
         <button class="btn secondary" onclick="dryRun('${conn.id}')">Dry Run</button>
         <button class="btn secondary" onclick="editConnection('${conn.id}')">Edit</button>
-        <button class="btn danger" onclick="deleteConnection('${conn.id}')">Delete</button>
+        <button class="btn danger" onclick="deleteConnection('${conn.id}', '${conn.name}')">Delete</button>
       </div>
     `;
 
@@ -248,18 +295,44 @@ async function loadConnections() {
 async function dryRun(id) {
   try {
     const result = await window.api.dryRunBackup(id);
-    let details = `🔍 Dry-Run Preview for ${result.connectionName}:\n\n`;
-    details += `• Database Type: ${result.type}\n`;
-    details += `• Total Tables/Collections: ${result.tablesCount}\n`;
-    details += `• Total Document/Row Count: ${result.totalRows}\n`;
-    details += `• Estimated Payload Size: ~${result.estimatedSizeMB} MB\n\n`;
-    details += `Table Breakdown:\n`;
-    for (const [tbl, count] of Object.entries(result.tables)) {
-      details += `  - ${tbl}: ${count} rows\n`;
-    }
-    alert(details);
+    
+    document.getElementById('dryRunModalTitle').textContent = `🔍 Dry-Run Preview — ${result.connectionName}`;
+    document.getElementById('dryRunDbType').textContent = result.type;
+    document.getElementById('dryRunTotalRows').textContent = `${result.totalRows} rows`;
+    document.getElementById('dryRunPayloadSize').textContent = `~${result.estimatedSizeMB} MB`;
+
+    const tbody = document.getElementById('dryRunTableBody');
+    tbody.innerHTML = '';
+
+    // Sort descending by row count
+    const sortedTables = Object.entries(result.tables).sort((a, b) => b[1] - a[1]);
+
+    sortedTables.forEach(([tbl, count]) => {
+      const tr = document.createElement('tr');
+      const isLarge = count > 50000;
+      tr.innerHTML = `
+        <td style="padding: 0.6rem 1rem;"><code>${tbl}</code> ${isLarge ? '<span style="font-size: 0.7rem; color: #f59e0b; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 4px; margin-left: 0.5rem;">Large Table</span>' : ''}</td>
+        <td style="padding: 0.6rem 1rem; text-align: right; font-weight: 600;">${count.toLocaleString()}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    const btnRunFromDryRun = document.getElementById('btnRunBackupFromDryRun');
+    btnRunFromDryRun.onclick = () => {
+      document.getElementById('dryRunModal').classList.remove('active');
+      runBackup(id);
+    };
+
+    document.getElementById('dryRunModal').classList.add('active');
   } catch (err) {
     alert(`Dry-run preview failed: ${err.message}`);
+  }
+}
+
+async function deleteConnection(id, name) {
+  if (confirm(`Are you sure you want to delete connection "${name}"?\n\nThis will only remove the connection configuration from Backpack. Your GitHub backup commits will not be affected.`)) {
+    await window.api.deleteConnection(id);
+    await loadConnections();
   }
 }
 
