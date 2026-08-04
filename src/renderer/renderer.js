@@ -17,7 +17,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Modal Handling
+  document.getElementById('btnOpenCommunityModal')?.addEventListener('click', () => {
+    alert('🍉 Create Community Dialog Triggered! (registry.watermelon.sh/r/create-community.json)');
+  });
+
+  document.getElementById('btnOpenDialogStack')?.addEventListener('click', () => {
+    alert('📚 Dialog Stack Component Triggered! (registry.watermelon.sh/r/dialog-stack.json)');
+  });
+
+  document.getElementById('btnOpenUniswapDialog')?.addEventListener('click', () => {
+    alert('🔄 Uniswap Dialog Component Triggered! (registry.watermelon.sh/r/uniswap-dialog.json)');
+  });
   const modal = document.getElementById('connectionModal');
   const btnOpenAdd = document.getElementById('btnOpenAddModal');
   const btnCloseModal = document.getElementById('btnCloseModal');
