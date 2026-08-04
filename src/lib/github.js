@@ -1,4 +1,6 @@
 const { Octokit } = require('@octokit/rest');
+const zlib = require('zlib');
+const cryptoUtils = require('./crypto');
 
 class GitHubUploader {
   constructor(token, ownerRepo, branch = 'main') {
@@ -22,7 +24,7 @@ class GitHubUploader {
     }
   }
 
-  async uploadBackup(connectionName, data) {
+  async uploadBackup(connectionName, data, options = {}) {
     if (!this.owner || !this.repo) {
       throw new Error('Invalid GitHub repo format. Expected "owner/repo"');
     }
@@ -30,16 +32,29 @@ class GitHubUploader {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const safeConnName = connectionName.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
 
-    const jsonString = JSON.stringify(data, null, 2);
-    const buffer = Buffer.from(jsonString, 'utf-8');
-    const sizeInMB = buffer.length / (1024 * 1024);
+    let jsonString = JSON.stringify(data, null, 2);
+    let payloadBuffer = Buffer.from(jsonString, 'utf-8');
 
-    // GitHub Contents API limit is 100MB; chunk if > 40MB
+    let fileExtension = '.json';
+
+    // Optional Gzip compression
+    if (options.compress) {
+      payloadBuffer = zlib.gzipSync(payloadBuffer);
+      fileExtension = '.json.gz';
+    }
+
+    // Optional Client-side AES Encryption
+    if (options.encryptionPassword) {
+      payloadBuffer = cryptoUtils.encryptPayload(payloadBuffer, options.encryptionPassword);
+      fileExtension += '.enc';
+    }
+
+    const sizeInMB = payloadBuffer.length / (1024 * 1024);
     const MAX_CHUNK_MB = 40;
     const filesToUpload = [];
 
-    if (sizeInMB > MAX_CHUNK_MB) {
-      // Chunking by top-level keys (collections/tables)
+    if (sizeInMB > MAX_CHUNK_MB && !options.encryptionPassword && !options.compress) {
+      // Chunking by top-level keys
       let currentChunk = {};
       let currentChunkSize = 0;
       let partIndex = 1;
@@ -50,7 +65,7 @@ class GitHubUploader {
 
         if (currentChunkSize + itemSize > MAX_CHUNK_MB * 1024 * 1024 && Object.keys(currentChunk).length > 0) {
           filesToUpload.push({
-            path: `backups/${safeConnName}/${timestamp}.part-${String(partIndex).padStart(4, '0')}.json`,
+            path: `backups/${safeConnName}/${timestamp}.part-${String(partIndex).padStart(4, '0')}${fileExtension}`,
             content: Buffer.from(JSON.stringify(currentChunk, null, 2)).toString('base64')
           });
           partIndex++;
@@ -64,21 +79,21 @@ class GitHubUploader {
 
       if (Object.keys(currentChunk).length > 0) {
         filesToUpload.push({
-          path: `backups/${safeConnName}/${timestamp}.part-${String(partIndex).padStart(4, '0')}.json`,
+          path: `backups/${safeConnName}/${timestamp}.part-${String(partIndex).padStart(4, '0')}${fileExtension}`,
           content: Buffer.from(JSON.stringify(currentChunk, null, 2)).toString('base64')
         });
       }
     } else {
       filesToUpload.push({
-        path: `backups/${safeConnName}/${timestamp}.json`,
-        content: buffer.toString('base64')
+        path: `backups/${safeConnName}/${timestamp}${fileExtension}`,
+        content: payloadBuffer.toString('base64')
       });
     }
 
-    // Always create/overwrite latest.json summary
+    // Overwrite latest.json (or latest.json.gz / latest.json.enc)
     filesToUpload.push({
-      path: `backups/${safeConnName}/latest.json`,
-      content: buffer.toString('base64')
+      path: `backups/${safeConnName}/latest${fileExtension}`,
+      content: payloadBuffer.toString('base64')
     });
 
     const commitMessage = `Backup ${connectionName} (${timestamp})`;
@@ -96,9 +111,7 @@ class GitHubUploader {
         if (existing.data && existing.data.sha) {
           sha = existing.data.sha;
         }
-      } catch (e) {
-        // File does not exist yet
-      }
+      } catch (e) {}
 
       await this.octokit.rest.repos.createOrUpdateFileContents({
         owner: this.owner,
