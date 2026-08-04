@@ -100,53 +100,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // ── Dock Navigation ──
-  const dockItems = document.querySelectorAll('.dock-item[data-tab]');
-  const tabPages  = document.querySelectorAll('.tab-page');
-  const dockPanel = document.getElementById('dockPanel');
-
-  // Magnification constants (matching Dock.tsx defaults)
-  const BASE_SIZE    = 50;
-  const MAX_SIZE     = 72;
-  const DISTANCE     = 130;
-
-  function applyMagnification(mouseX) {
-    dockItems.forEach(item => {
-      const icon = item.querySelector('.dock-icon');
-      if (!icon) return;
-      const rect = icon.getBoundingClientRect();
-      const center = rect.left + rect.width / 2;
-      const dist = Math.abs(mouseX - center);
-      let scale = 1;
-      if (dist < DISTANCE) {
-        // Cosine falloff
-        scale = 1 + (MAX_SIZE / BASE_SIZE - 1) * Math.cos((dist / DISTANCE) * (Math.PI / 2));
-      }
-      icon.style.setProperty('--dock-scale', scale.toFixed(3));
-    });
-  }
-
-  dockPanel?.addEventListener('mousemove', (e) => applyMagnification(e.clientX));
-  dockPanel?.addEventListener('mouseleave', () => {
-    dockItems.forEach(item => {
-      item.querySelector('.dock-icon')?.style.setProperty('--dock-scale', '1');
-    });
-  });
-
-  // Tab switching
-  dockItems.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetTab = btn.getAttribute('data-tab');
-      dockItems.forEach(b => b.classList.remove('active'));
-      tabPages.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(`tab-${targetTab}`)?.classList.add('active');
-      if (targetTab === 'logs') loadLogs();
-      if (targetTab === 'restore') loadRestoreConnections();
-    });
-  });
-
 // ── Dynamic DB Credential Guidance & Security Modes ──────────────────
 const DB_TYPE_CONFIG = {
   postgres: {
@@ -218,8 +171,72 @@ function setSecurityMode(mode) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // ── Dock Navigation ──
+  const dockItems = document.querySelectorAll('.dock-item[data-tab]');
+  const tabPages  = document.querySelectorAll('.tab-page');
+  const dockPanel = document.getElementById('dockPanel');
 
-  btnCloseModal.addEventListener('click', () => {
+  // Magnification constants (matching Dock.tsx defaults)
+  const BASE_SIZE    = 50;
+  const MAX_SIZE     = 72;
+  const DISTANCE     = 130;
+
+  function applyMagnification(mouseX) {
+    dockItems.forEach(item => {
+      const icon = item.querySelector('.dock-icon');
+      if (!icon) return;
+      const rect = icon.getBoundingClientRect();
+      const center = rect.left + rect.width / 2;
+      const dist = Math.abs(mouseX - center);
+      let scale = 1;
+      if (dist < DISTANCE) {
+        // Cosine falloff
+        scale = 1 + (MAX_SIZE / BASE_SIZE - 1) * Math.cos((dist / DISTANCE) * (Math.PI / 2));
+      }
+      icon.style.setProperty('--dock-scale', scale.toFixed(3));
+    });
+  }
+
+  dockPanel?.addEventListener('mousemove', (e) => applyMagnification(e.clientX));
+  dockPanel?.addEventListener('mouseleave', () => {
+    dockItems.forEach(item => {
+      item.querySelector('.dock-icon')?.style.setProperty('--dock-scale', '1');
+    });
+  });
+
+  // Tab switching
+  dockItems.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.getAttribute('data-tab');
+      dockItems.forEach(b => b.classList.remove('active'));
+      tabPages.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`tab-${targetTab}`)?.classList.add('active');
+      if (targetTab === 'logs') loadLogs();
+      if (targetTab === 'restore') loadRestoreConnections();
+    });
+  });
+
+  // Refresh Logs Button
+  document.getElementById('btnRefreshLogs')?.addEventListener('click', () => loadLogs());
+
+  const modal = document.getElementById('connectionModal');
+  const btnOpenAdd = document.getElementById('btnOpenAddModal');
+  const btnCloseModal = document.getElementById('btnCloseModal');
+  const connForm = document.getElementById('connectionForm');
+
+  btnOpenAdd?.addEventListener('click', () => {
+    document.getElementById('modalTitle').textContent = 'Add Connection';
+    connForm.reset();
+    document.getElementById('connId').value = '';
+    const secretEl = document.getElementById('connSecret');
+    secretEl.setAttribute('required', 'true');
+    setSecurityMode('normal');
+    updateCredentialHints();
+    modal.classList.add('active');
+  });
+
+  btnCloseModal?.addEventListener('click', () => {
     modal.classList.remove('active');
   });
 
