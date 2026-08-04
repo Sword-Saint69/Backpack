@@ -17,17 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  document.getElementById('btnOpenCommunityModal')?.addEventListener('click', () => {
-    alert('🍉 Create Community Dialog Triggered! (registry.watermelon.sh/r/create-community.json)');
-  });
-
-  document.getElementById('btnOpenDialogStack')?.addEventListener('click', () => {
-    alert('📚 Dialog Stack Component Triggered! (registry.watermelon.sh/r/dialog-stack.json)');
-  });
-
-  document.getElementById('btnOpenUniswapDialog')?.addEventListener('click', () => {
-    alert('🔄 Uniswap Dialog Component Triggered! (registry.watermelon.sh/r/uniswap-dialog.json)');
-  });
+  // Refresh Logs Button
+  document.getElementById('btnRefreshLogs')?.addEventListener('click', () => loadLogs());
   const modal = document.getElementById('connectionModal');
   const btnOpenAdd = document.getElementById('btnOpenAddModal');
   const btnCloseModal = document.getElementById('btnCloseModal');
@@ -389,12 +380,7 @@ async function editConnection(id) {
   document.getElementById('connectionModal').classList.add('active');
 }
 
-async function deleteConnection(id) {
-  if (confirm('Are you sure you want to delete this connection?')) {
-    await window.api.deleteConnection(id);
-    await loadConnections();
-  }
-}
+// (deleteConnection with name + confirmation is defined above)
 
 async function loadRestoreConnections() {
   const select = document.getElementById('restoreSelectConn');
