@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Backpack — Database Backup to GitHub</title>
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
 </head>
+
 <body>
   <div class="app-container">
     <!-- Sidebar Navigation -->
@@ -139,7 +143,8 @@
           <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between;">
             <div>
               <label style="font-size: 0.95rem; color: var(--text-main);">Launch Backpack on System Startup</label>
-              <p style="font-size: 0.8rem; color: var(--text-muted);">Starts Backpack minimized in tray when logging into your operating system.</p>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Starts Backpack minimized in tray when logging
+                into your operating system.</p>
             </div>
             <input type="checkbox" id="chkStartup" style="width: 20px; height: 20px; cursor: pointer;">
           </div>
@@ -196,31 +201,37 @@
             <option value="mysql">MySQL</option>
             <option value="firebase">Firebase Firestore</option>
             <option value="sqlite">SQLite Database</option>
+            <option value="mongodb">MongoDB / Atlas</option>
+            <option value="supabase">Supabase REST API</option>
           </select>
         </div>
 
         <div class="form-group">
           <label for="connSecret" id="connSecretLabel">Connection String / Service Account JSON</label>
-          <textarea id="connSecret" rows="3" placeholder="postgresql://user:pass@ep-xyz.neon.tech/neondb?sslmode=require"></textarea>
+          <textarea id="connSecret" rows="3"
+            placeholder="postgresql://user:pass@ep-xyz.neon.tech/neondb?sslmode=require"></textarea>
         </div>
 
         <div class="form-group">
           <label for="selectedTables">Selective Backup Tables / Collections (Optional)</label>
-          <input type="text" id="selectedTables" placeholder="users, orders, products (Comma-separated, leave blank for ALL)">
+          <input type="text" id="selectedTables"
+            placeholder="users, orders, products (Comma-separated, leave blank for ALL)">
         </div>
 
         <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">
           <input type="checkbox" id="chkCompress" style="width: 16px; height: 16px;">
-          <label for="chkCompress" style="margin: 0; color: var(--text-main);">Compress Payload with Gzip (.json.gz)</label>
+          <label for="chkCompress" style="margin: 0; color: var(--text-main);">Compress Payload with Gzip
+            (.json.gz)</label>
         </div>
 
         <div class="form-group">
           <label for="encryptionPassword">Client-Side AES Encryption Password (Optional)</label>
-          <input type="password" id="encryptionPassword" placeholder="Password to encrypt JSON payload at rest on GitHub">
+          <input type="password" id="encryptionPassword"
+            placeholder="Password to encrypt JSON payload at rest on GitHub">
         </div>
 
         <h4 style="margin: 1rem 0 0.5rem 0; font-size: 0.9rem; color: var(--text-main);">Automatic Backup Schedule</h4>
-        
+
         <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">
           <input type="checkbox" id="schedEnabled" style="width: 16px; height: 16px;">
           <label for="schedEnabled" style="margin: 0; color: var(--text-main);">Enable Cron Schedule</label>
@@ -251,4 +262,5 @@
 
   <script src="renderer.js"></script>
 </body>
+
 </html>

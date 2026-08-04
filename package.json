@@ -1,6 +1,6 @@
 {
     "name":  "backpack",
-    "version":  "1.0.8",
+    "version":  "1.0.9",
     "description":  "",
     "main":  "src/main.js",
     "scripts":  {
@@ -15,9 +15,11 @@
     "type":  "commonjs",
     "dependencies":  {
                          "@octokit/rest":  "^22.0.1",
+                         "@supabase/supabase-js":  "^2.112.0",
                          "electron":  "^43.2.0",
                          "electron-store":  "^11.0.2",
                          "firebase-admin":  "^14.2.0",
+                         "mongodb":  "^7.5.0",
                          "mysql2":  "^3.23.2",
                          "node-cron":  "^4.6.0",
                          "pg":  "^8.22.0"
