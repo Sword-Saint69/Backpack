@@ -140,8 +140,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('modalTitle').textContent = 'Add Connection';
     connForm.reset();
     document.getElementById('connId').value = '';
+    updateCredentialHints();
     modal.classList.add('active');
   });
+
+  const connTypeSelect = document.getElementById('connType');
+  const connSecretLabel = document.getElementById('connSecretLabel');
+  const connSecretTextarea = document.getElementById('connSecret');
+  const connSecretHint = document.getElementById('connSecretHint');
+
+  const DB_TYPE_CONFIG = {
+    postgres: {
+      label: 'Postgres Connection URI',
+      placeholder: 'postgresql://username:password@ep-cool-name.us-east-2.aws.neon.tech/neondb?sslmode=require',
+      hint: '💡 <strong>Format:</strong> <code>postgresql://[user]:[password]@[host]:[port]/[dbname]?sslmode=require</code>'
+    },
+    mysql: {
+      label: 'MySQL Connection URI or Config JSON',
+      placeholder: 'mysql://root:password@127.0.0.1:3306/mydatabase',
+      hint: '💡 <strong>Format:</strong> <code>mysql://[user]:[password]@[host]:[port]/[dbname]</code>'
+    },
+    firebase: {
+      label: 'Firebase Service Account Key (JSON)',
+      placeholder: '{\n  "type": "service_account",\n  "project_id": "my-project",\n  "private_key": "-----BEGIN PRIVATE KEY-----\\n..."\n}',
+      hint: '💡 Paste your entire GCP / Firebase service account <code>.json</code> credentials object.'
+    },
+    sqlite: {
+      label: 'SQLite Database Absolute File Path',
+      placeholder: 'C:\\Users\\name\\AppData\\Local\\MyApp\\database.sqlite',
+      hint: '💡 Enter the complete absolute filepath to your local <code>.sqlite</code> / <code>.db</code> file.'
+    },
+    mongodb: {
+      label: 'MongoDB Atlas Connection String',
+      placeholder: 'mongodb+srv://admin:password@cluster0.abcde.mongodb.net/production?retryWrites=true&w=majority',
+      hint: '💡 <strong>Format:</strong> <code>mongodb+srv://[user]:[pass]@[cluster]/[dbname]</code>'
+    },
+    supabase: {
+      label: 'Supabase Project URL & Service Role Key',
+      placeholder: 'https://xyz.supabase.co|service_role_secret_key',
+      hint: '💡 <strong>Format:</strong> <code>https://[project-id].supabase.co|[service_role_key]</code> (pipe-separated)'
+    }
+  };
+
+  function updateCredentialHints() {
+    const type = connTypeSelect?.value || 'postgres';
+    const cfg = DB_TYPE_CONFIG[type] || DB_TYPE_CONFIG.postgres;
+    if (connSecretLabel) connSecretLabel.textContent = cfg.label;
+    if (connSecretTextarea) connSecretTextarea.placeholder = cfg.placeholder;
+    if (connSecretHint) connSecretHint.innerHTML = cfg.hint;
+  }
+
+  connTypeSelect?.addEventListener('change', updateCredentialHints);
+  updateCredentialHints();
 
   btnCloseModal.addEventListener('click', () => {
     modal.classList.remove('active');
@@ -566,8 +616,11 @@ async function editConnection(id) {
   document.getElementById('connId').value = conn.id;
   document.getElementById('connName').value = conn.name;
   document.getElementById('connType').value = conn.type;
-  document.getElementById('connSecret').value = '';
-  document.getElementById('connSecret').placeholder = '(Encrypted Secret Preserved — enter new value to overwrite)';
+  updateCredentialHints();
+  const secretEl = document.getElementById('connSecret');
+  secretEl.value = '';
+  secretEl.removeAttribute('required');
+  secretEl.placeholder = '(Encrypted Secret Preserved — enter new value to overwrite)';
   document.getElementById('connectionModal').classList.add('active');
 }
 
