@@ -567,9 +567,35 @@ async function dryRun(id) {
     });
 
     const btnRunFromDryRun = document.getElementById('btnRunBackupFromDryRun');
-    btnRunFromDryRun.onclick = () => {
-      document.getElementById('dryRunModal').classList.remove('active');
-      runBackup(id);
+    const syncTarget = document.getElementById('dryRunSyncTarget');
+    
+    // Reset pill state when opening
+    if (syncTarget) {
+      syncTarget.className = 'inline-action-target';
+      syncTarget.innerHTML = `<button type="button" class="inline-action-btn" id="btnRunBackupFromDryRun">Sync Now</button>`;
+    }
+
+    document.getElementById('btnRunBackupFromDryRun').onclick = async () => {
+      const target = document.getElementById('dryRunSyncTarget');
+      if (!target) return;
+
+      // State 1: Loading pulse
+      target.innerHTML = `<div class="inline-action-loader"><div class="inline-action-loader-bar"></div></div>`;
+
+      try {
+        await runBackup(id);
+
+        // State 2: Success Checkmark pop
+        target.className = 'inline-action-target state-success';
+        target.innerHTML = `<i class="ph-bold ph-check inline-action-success-icon"></i>`;
+
+        setTimeout(() => {
+          document.getElementById('dryRunModal').classList.remove('active');
+        }, 1200);
+      } catch (err) {
+        target.className = 'inline-action-target';
+        target.innerHTML = `<button type="button" class="inline-action-btn" id="btnRunBackupFromDryRun">Retry Sync</button>`;
+      }
     };
 
     document.getElementById('dryRunModal').classList.add('active');

@@ -975,6 +975,124 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
+/* ──────────────────────────────────────
+   INLINE ACTION BUTTON (watermelon.sh port)
+   Animated pill action button with spring scale, loading bar, & success checkmark
+────────────────────────────────────── */
+.inline-action-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background: rgba(24, 24, 27, 0.95);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.inline-action-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.inline-action-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.inline-action-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inline-action-target {
+  position: relative;
+  height: 40px;
+  width: 130px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.35s ease;
+  flex-shrink: 0;
+}
+
+.inline-action-target.state-success {
+  width: 40px;
+  background: #fafafa;
+  color: #09090b;
+}
+
+.inline-action-btn {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 1rem;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+  white-space: nowrap;
+}
+
+.inline-action-btn:hover {
+  color: var(--primary);
+}
+
+.inline-action-loader {
+  position: relative;
+  width: 80%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.inline-action-loader-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  border-radius: 999px;
+  background: #fafafa;
+  animation: pill-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pill-pulse {
+  0% { left: 0%; }
+  100% { left: 60%; }
+}
+
+.inline-action-success-icon {
+  font-size: 1.1rem;
+  color: #09090b;
+  animation: check-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes check-pop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* Form Styling */
 .form-card {
   max-width: 600px;

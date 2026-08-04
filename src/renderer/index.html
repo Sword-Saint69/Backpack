@@ -244,11 +244,18 @@
         </table>
       </div>
 
-      <div class="modal-actions">
-        <button type="button" class="save-toggle-btn secondary-toggle" id="btnCloseDryRun">Cancel</button>
-        <button type="button" class="save-toggle-btn primary-toggle" id="btnRunBackupFromDryRun">
-          <span class="btn-text">Run Backup Now</span>
-        </button>
+      <div style="margin-top: 1.25rem;">
+        <div class="inline-action-pill" id="dryRunSyncPill">
+          <div class="inline-action-left">
+            <div class="inline-action-icon">
+              <i class="ph-bold ph-arrows-clockwise"></i>
+            </div>
+            <span class="inline-action-label">Sync Database Events</span>
+          </div>
+          <div class="inline-action-target" id="dryRunSyncTarget">
+            <button type="button" class="inline-action-btn" id="btnRunBackupFromDryRun">Sync Now</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
