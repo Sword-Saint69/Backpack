@@ -337,11 +337,41 @@ async function deleteConnection(id, name) {
 }
 
 async function runBackup(id) {
+  const card = document.querySelector(`[data-card-id="${id}"]`);
+  const statusEl = card?.querySelector('.conn-status');
+  const backupBtn = card?.querySelector('.btn-backup');
+
+  if (backupBtn) {
+    backupBtn.disabled = true;
+    backupBtn.style.opacity = '0.5';
+    backupBtn.textContent = 'Running...';
+  }
+
+  if (statusEl) {
+    statusEl.textContent = '⏳ Running Backup...';
+    statusEl.style.color = '#f59e0b';
+  }
+
   try {
     await window.api.runBackup(id);
+    if (statusEl) {
+      statusEl.textContent = 'Ready (Success)';
+      statusEl.style.color = 'var(--success)';
+    }
+    await loadConnections();
     alert('Backup completed successfully!');
   } catch (err) {
+    if (statusEl) {
+      statusEl.textContent = 'Failed';
+      statusEl.style.color = 'var(--danger)';
+    }
     alert(`Backup failed: ${err.message}`);
+  } finally {
+    if (backupBtn) {
+      backupBtn.disabled = false;
+      backupBtn.style.opacity = '1';
+      backupBtn.textContent = 'Backup Now';
+    }
   }
 }
 
